@@ -16,14 +16,15 @@ def CreateGraph(Matrix):
   
   for i in range(N):
    for j in range(N):
-      if(M[i][j] != 0):
-        if(NodeExist(i,j+1,M)):
+      if(Matrix[i][j] != 0):
+        g.nodes[ActualNode]['position']=(j,i)
+        if(NodeExist(i,j+1,Matrix)):
           g.add_edge(ActualNode,ActualNode+1)
-        if(NodeExist(i,j-1,M)):
+        if(NodeExist(i,j-1,Matrix)):
           g.add_edge(ActualNode,ActualNode-1)
-        if(NodeExist(i+1,j,M)):
+        if(NodeExist(i+1,j,Matrix)):
           g.add_edge(ActualNode,ActualNode + N)
-        if(NodeExist(i-1,j,M)):
+        if(NodeExist(i-1,j,Matrix)):
           g.add_edge(ActualNode,ActualNode - N)
       ActualNode += 1
   return g
@@ -39,14 +40,14 @@ def CreateDownSideGraph(Matrix):
   
   for i in reversed(range(N)):
    for j in reversed(range(N)):
-      if(M[i][j] != 0):
-        if(NodeExist(i,j+1,M)):
+      if(Matrix[i][j] != 0):
+        if(NodeExist(i,j+1,Matrix)):
           g.add_edge(ActualNode,ActualNode+1)
-        if(NodeExist(i,j-1,M)):
+        if(NodeExist(i,j-1,Matrix)):
           g.add_edge(ActualNode,ActualNode-1)
-        if(NodeExist(i+1,j,M)):
+        if(NodeExist(i+1,j,Matrix)):
           g.add_edge(ActualNode,ActualNode + N)
-        if(NodeExist(i-1,j,M)):
+        if(NodeExist(i-1,j,Matrix)):
           g.add_edge(ActualNode,ActualNode - N)
       ActualNode -= 1
   return g 
@@ -118,15 +119,7 @@ def BFS(G,s):
         q.put(v)
       u['color'] = 'Negro'
 
-M =[[3,3],
-    [3,3]]
-graph = CreateGraph(M)
 tiempo = 0
-camino=[]
-nx.draw(graph,with_labels=True)
-BFS(graph,graph.nodes[1])
-for i in graph.nodes(data = True):
-  print(i)
 
 
 
