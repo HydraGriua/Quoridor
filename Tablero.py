@@ -5,6 +5,9 @@ from TestGraph import *
 #Configs iniciales
 colors = [(255,255,255),(0,0,0),(255,0,0),(28,110,140),(208,204,208),(53,53,53),(39,65,86)]#bnr
 WH = 900
+camino = []
+i = 0
+
 
 #Medidas para graficar
 n = int(input(" ingrese x (tablero sera de x * x):"))
@@ -29,9 +32,12 @@ class Jugador():
         self.x = (x//(size+space))
         self.y = (y//(size+space))
     def Dibujar(self,win,color,r,n):
-        xDibujo = int((self.x)*(size+space)*1.12)
+        xDibujo = int((self.x)*(size+space)+(size/2 + space))
         yDibujo = int((self.y)*(size+space)+(size/2 + space))
         pg.draw.circle(win,color,(xDibujo,yDibujo),r)
+    def Mover(self,x,y):
+        self.x = x
+        self.y = y
 
 jug1= Jugador(WH/2,space+(size/2))
 jug2= Jugador(WH/2,WH-(space+(size/2)))
@@ -65,18 +71,31 @@ while run:
 
     #Calls
     draw(win)
+    graph = CreateGraph(grid)
+    startnode1 = [x for x,y in graph.nodes(data=True) if y['position']==(int(jug1.x),int(jug1.y))]
+    BFS(graph,graph.nodes[startnode1[0]])
+    hallar_camino(graph,graph.nodes[startnode1[0]],graph.nodes[91],camino)
     jug1.Dibujar(win,colors[2],12,n)
-    jug2.Dibujar(win,colors[2],12,n)
+    pressed = pg.key.get_pressed()
+    if pressed[pg.K_w]:
+        i+=1
+        x = graph.nodes[int(camino[i])]['position'][0]
+        y = graph.nodes[int(camino[i])]['position'][1]
+        jug1.Mover(x,y)
+            #jug1.Dibujar(win,colors[2],12,n)
+    #jug2.Dibujar(win,colors[2],12,n)
+
     pg.display.update()
 
-graph = CreateGraph(grid)
-print(jug1.x,jug1.y)
-startnode1 = [x for x,y in graph.nodes(data=True) if y['position']==(jug1.x,jug1.y)]
-#9BFS(graph,startnode1)
-print(startnode1)
-#camino = []
-#hallar_camino(graph,startnode1,graph.nodes[45],camino)
-#print(camino)
+
+
+
+
+
+
+
+
+
 
 
 
