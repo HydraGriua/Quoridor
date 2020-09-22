@@ -9,31 +9,32 @@ WH = 900
 #Medidas para graficar
 n = int(input(" ingrese x (tablero sera de x * x):"))
 grid = [[1]*n for x in range(n)]
-print(grid)
-esp=(WH/n)
-sep = esp/(n-1)
-anchCuad=esp-sep
+size = WH / (n*1.15)
+space = WH / (n*8.15)
 
  #Graficar el tablero con las medidas
 def draw(win):
-    x,y=sep,sep
+    x,y=space,space
     for row in grid:
         for col in row:
-            pg.draw.rect(win,colors[4],[x,y,anchCuad,anchCuad])
-            x+=anchCuad+sep
-        y+=anchCuad+sep
-        x=sep
+            pg.draw.rect(win,colors[4],[x,y,size,size])
+            x+=size + space
+        x = space
+        y+=size + space
+        
 
 #pos inicial jugadores 
 class Jugador():
     def __init__(self,x,y):
-        self.x = int(x)
-        self.y = int(y)
+        self.x = (x//(size+space))
+        self.y = (y//(size+space))
     def Dibujar(self,win,color,r,n):
-        pg.draw.circle(win,color,((self.x*(n**2))+int(anchCuad/2),(self.y*(n**2))+int(anchCuad/2)),r)
+        xDibujo = int((self.x)*(size+space)*1.12)
+        yDibujo = int((self.y)*(size+space)+(size/2 + space))
+        pg.draw.circle(win,color,(xDibujo,yDibujo),r)
 
-jug1= Jugador(8*int( sep+(anchCuad/2) )//(n*n),int( sep+(anchCuad/2) )//(n*n) )
-jug2= Jugador(8*int( (sep+(anchCuad/2) ) )//(n*n),15*int( (sep+(anchCuad/2) ) )//(n*n) )
+jug1= Jugador(WH/2,space+(size/2))
+jug2= Jugador(WH/2,WH-(space+(size/2)))
 
 #window
 pg.init()
