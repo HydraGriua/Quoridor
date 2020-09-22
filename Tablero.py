@@ -82,7 +82,6 @@ while run:
         x = graph.nodes[int(camino[i])]['position'][0]
         y = graph.nodes[int(camino[i])]['position'][1]
         jug1.Mover(x,y)
-            #jug1.Dibujar(win,colors[2],12,n)
     #jug2.Dibujar(win,colors[2],12,n)
 
     pg.display.update()
