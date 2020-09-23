@@ -5,7 +5,7 @@ global tiempo
 
 
 ##CREAR GRAFO
-def CreateGraph(Matrix):
+def CreateGraph(Matrix,jugc):
   g = nx.DiGraph()
   N = len(Matrix)
   
@@ -16,7 +16,7 @@ def CreateGraph(Matrix):
   
   for i in range(N):
    for j in range(N):
-      if(Matrix[i][j] != 0):
+      if(Matrix[i][j] != 0 and (i,j) != jugc.Pos()):
         g.nodes[ActualNode]['position']=(j,i)
         if(NodeExist(i,j+1,Matrix)):
           g.add_edge(ActualNode,ActualNode+1)
