@@ -16,16 +16,21 @@ def CreateGraph(Matrix,jugc):
   
   for i in range(N):
    for j in range(N):
-      if(Matrix[i][j] != 0 and (i,j) != jugc.Pos()):
-        g.nodes[ActualNode]['position']=(j,i)
-        if(NodeExist(i,j+1,Matrix)):
-          g.add_edge(ActualNode,ActualNode+1)
-        if(NodeExist(i,j-1,Matrix)):
-          g.add_edge(ActualNode,ActualNode-1)
-        if(NodeExist(i+1,j,Matrix)):
-          g.add_edge(ActualNode,ActualNode + N)
-        if(NodeExist(i-1,j,Matrix)):
-          g.add_edge(ActualNode,ActualNode - N)
+      if(Matrix[i][j] != 0):
+        if((j,i) == jugc.Pos()):
+          g.nodes[ActualNode]['position']= None
+          g.nodes[ActualNode]['HasPosition'] = False
+        else:
+          g.nodes[ActualNode]['HasPosition'] = True
+          g.nodes[ActualNode]['position']=(j,i)
+          if(NodeExist(i,j+1,Matrix)):
+            g.add_edge(ActualNode,ActualNode+1)
+          if(NodeExist(i,j-1,Matrix)):
+            g.add_edge(ActualNode,ActualNode-1)
+          if(NodeExist(i+1,j,Matrix)):
+            g.add_edge(ActualNode,ActualNode + N)
+          if(NodeExist(i-1,j,Matrix)):
+            g.add_edge(ActualNode,ActualNode - N)
       ActualNode += 1
   return g
 
@@ -91,7 +96,9 @@ def hallar_camino(G, s, v, camino):
   if (v['id'] == s['id']):
     camino.append(s['id'])
   elif v['padre'] == None:
-    print('No exste camino de {} a {}'.format(s['id'],v['id']))
+    v = G.nodes[int(v['id'])-1]
+    hallar_camino(G,s,v,camino)
+    return
   else:
     hallar_camino(G,s,v['padre'],camino)
     camino.append(v['id'])
@@ -112,7 +119,7 @@ def BFS(G,s):
     u = q.get()
     for v_id in G.neighbors(int(u['id'])):
       v = G.nodes[v_id]
-      if v['color'] == 'Blanco':
+      if v['color'] == 'Blanco' and v['HasPosition'] == True:
         v['color'] = 'Gris'
         v['padre'] = u
         v['distance'] = u['distance'] + 1

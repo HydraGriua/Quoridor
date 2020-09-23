@@ -5,7 +5,6 @@ from TestGraph import *
 #Configs iniciales
 colors = [(255,255,255),(0,0,0),(255,0,0),(28,110,140),(208,204,208),(53,53,53),(39,65,86)]#bnr
 WH = 900
-camino = []
 i = 0
 
 
@@ -74,9 +73,12 @@ while run:
     #Calls
     draw(win)
     graph1 = CreateGraph(grid,jug2)
-    startnode1 = [x for x,y in graph1.nodes(data=True) if y['position']==(int(jug1.x),int(jug1.y))]
+    camino = []
+    i = 0
+    startnode1 = [x for x,y in graph1.nodes(data=True) if (y['position'] ==(int(jug1.x),int(jug1.y)) and y['HasPosition'] == True)]
     BFS(graph1,graph1.nodes[startnode1[0]])
-    hallar_camino(graph1,graph1.nodes[startnode1[0]],graph1.nodes[58],camino)
+    hallar_camino(graph1,graph1.nodes[startnode1[0]],graph1.nodes[77],camino)
+    
     jug1.Dibujar(win,colors[2],12,n)
     pressed = pg.key.get_pressed()
     if pressed[pg.K_w]:
@@ -85,7 +87,7 @@ while run:
         y = graph1.nodes[int(camino[i])]['position'][1]
         pg.time.delay(200)
         jug1.Mover(x,y)
-    #jug2.Dibujar(win,colors[2],12,n)
+    jug2.Dibujar(win,colors[2],12,n)
 
     pg.display.update()
 
