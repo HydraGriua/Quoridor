@@ -4,3 +4,7 @@ Integrantes:
 -Lino Mac Kay
 -Brandon Gomez
 -Flavio Saavedra
+
+![picture](https://maldon.com.ar/wp-content/uploads/2020/03/quoridor01-1300x731.jpg)
+
+-tienda del juego oficial: https://en.gigamic.com/game/quoridor
