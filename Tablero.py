@@ -74,13 +74,14 @@ while run:
     graph = CreateGraph(grid)
     startnode1 = [x for x,y in graph.nodes(data=True) if y['position']==(int(jug1.x),int(jug1.y))]
     BFS(graph,graph.nodes[startnode1[0]])
-    hallar_camino(graph,graph.nodes[startnode1[0]],graph.nodes[91],camino)
+    hallar_camino(graph,graph.nodes[startnode1[0]],graph.nodes[58],camino)
     jug1.Dibujar(win,colors[2],12,n)
     pressed = pg.key.get_pressed()
     if pressed[pg.K_w]:
         i+=1
         x = graph.nodes[int(camino[i])]['position'][0]
         y = graph.nodes[int(camino[i])]['position'][1]
+        pg.time.delay(200)
         jug1.Mover(x,y)
     #jug2.Dibujar(win,colors[2],12,n)
 
