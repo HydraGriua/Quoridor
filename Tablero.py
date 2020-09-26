@@ -23,14 +23,27 @@ def draw(win):
             x+=size + space
         x = space
         y+=size + space
-        
+
+def Turnos(grid,jug,jugc,pos):
+    graph = CreateGraph(grid,jugc) 
+    camino = []
+    startnode = [x for x,y in graph.nodes(data=True) if (y['position'] ==(int(jug.x),int(jug.y)) and y['HasPosition'] == True)]
+    BFS(graph,graph.nodes[startnode[0]])
+    hallar_camino(graph,graph.nodes[startnode[0]],graph.nodes[pos],camino)  
+    jug.Dibujar(win,colors[2],12)
+    x = graph.nodes[int(camino[1])]['position'][0]
+    y = graph.nodes[int(camino[1])]['position'][1]
+    pg.time.delay(200)
+    jug.Mover(x,y)
+
+
 
 #pos inicial jugadores 
 class Jugador():
     def __init__(self,x,y):
         self.x = (x//(size+space))
         self.y = (y//(size+space))
-    def Dibujar(self,win,color,r,n):
+    def Dibujar(self,win,color,r):
         xDibujo = int((self.x)*(size+space)+(size/2 + space))
         yDibujo = int((self.y)*(size+space)+(size/2 + space))
         pg.draw.circle(win,color,(xDibujo,yDibujo),r)
@@ -62,34 +75,29 @@ while menu:
     pg.draw.rect(win,colors[0],botonMenu)
     win.blit(Label,(botonMenu.x+5,botonMenu.y+5))
     pg.display.update()
-
+Turno = True
 while run:
     win.fill(colors[3])
     for event in pg.event.get():
         if event.type == pg.QUIT:
             run = False
             #aki
+    
+    jug1.Dibujar(win,colors[2],12)
+    jug2.Dibujar(win,colors[5],12)
 
     #Calls
     draw(win)
-    graph1 = CreateGraph(grid,jug2)
-    camino = []
-    i = 0
-    startnode1 = [x for x,y in graph1.nodes(data=True) if (y['position'] ==(int(jug1.x),int(jug1.y)) and y['HasPosition'] == True)]
-    BFS(graph1,graph1.nodes[startnode1[0]])
-    hallar_camino(graph1,graph1.nodes[startnode1[0]],graph1.nodes[77],camino)
-    
-    jug1.Dibujar(win,colors[2],12,n)
     pressed = pg.key.get_pressed()
     if pressed[pg.K_w]:
-        i+=1
-        x = graph1.nodes[int(camino[i])]['position'][0]
-        y = graph1.nodes[int(camino[i])]['position'][1]
-        pg.time.delay(200)
-        jug1.Mover(x,y)
-    jug2.Dibujar(win,colors[2],12,n)
-
+        if Turno:
+            Turnos(grid,jug1,jug2,77)
+        else:
+            Turnos(grid,jug2,jug1,77)
+        Turno = not Turno
+    
     pg.display.update()
+    
 
 
 

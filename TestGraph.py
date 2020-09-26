@@ -34,18 +34,24 @@ def CreateGraph(Matrix,jugc):
       ActualNode += 1
   return g
 
-def CreateDownSideGraph(Matrix):
+def CreateDownSideGraph(Matrix,jugc):
   g = nx.DiGraph()
   N = len(Matrix)
   
   for i in reversed(range(N * N)):
     g.add_node(i+1)
     g.nodes[i+1]['id']=str(i+1)
-  ActualNode = 9
+  ActualNode = N*N
   
   for i in reversed(range(N)):
    for j in reversed(range(N)):
       if(Matrix[i][j] != 0):
+        if((j,i) == jugc.Pos()):
+          g.nodes[ActualNode]['position']= None
+          g.nodes[ActualNode]['HasPosition'] = False
+        else:
+          g.nodes[ActualNode]['HasPosition'] = True
+          g.nodes[ActualNode]['position']=(j,i)
         if(NodeExist(i,j+1,Matrix)):
           g.add_edge(ActualNode,ActualNode+1)
         if(NodeExist(i,j-1,Matrix)):
