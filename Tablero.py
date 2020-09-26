@@ -2,6 +2,7 @@ import pygame as pg
 import sys
 from TestGraph import *
 
+
 #Configs iniciales
 colors = [(255,255,255),(0,0,0),(255,0,0),(28,110,140),(208,204,208),(53,53,53),(39,65,86)]#bnr
 WH = 900
@@ -13,6 +14,9 @@ n = int(input(" ingrese x (tablero sera de x * x):"))
 grid = [[1]*n for x in range(n)]
 size = WH / (n*1.15)
 space = WH / (n*8.15)
+
+#radio jugador
+r = int((size-space)/3.14159)
 
  #Graficar el tablero con las medidas
 def draw(win):
@@ -27,40 +31,42 @@ def draw(win):
 def Turnos(grid,jug,jugc,pos):
     graph = CreateGraph(grid,jugc) 
     camino = []
-    i = 0
+    #i = 0
     startnode = [x for x,y in graph.nodes(data=True) if (y['position'] ==(int(jug.x),int(jug.y)) and y['HasPosition'] == True)]
     BFS(graph,graph.nodes[startnode[0]])
     hallar_camino(graph,graph.nodes[startnode[0]],graph.nodes[pos],camino)  
-    i+=1
+    #i+=1
     if len(camino) == 1:
         x = graph.nodes[int(camino[0])]['position'][0]
         y = graph.nodes[int(camino[0])]['position'][1]
     else:
-        x = graph.nodes[int(camino[i])]['position'][0]
-        y = graph.nodes[int(camino[i])]['position'][1]
-    pg.time.delay(200)
+        x = graph.nodes[int(camino[1])]['position'][0]
+        y = graph.nodes[int(camino[1])]['position'][1]
+    pg.time.delay(110)
     jug.Mover(x,y)
-    jug.Dibujar(win,colors[2],12)
+        
+    #jug.Dibujar(win,12)
 
 
 
 #pos inicial jugadores 
 class Jugador():
-    def __init__(self,x,y):
+    def __init__(self,x,y,c):
         self.x = (x//(size+space))
         self.y = (y//(size+space))
-    def Dibujar(self,win,color,r):
+        self.color = colors[c]
+    def Dibujar(self,win,r):
         xDibujo = int((self.x)*(size+space)+(size/2 + space))
         yDibujo = int((self.y)*(size+space)+(size/2 + space))
-        pg.draw.circle(win,color,(xDibujo,yDibujo),r)
+        pg.draw.circle(win,self.color,(xDibujo,yDibujo),r)
     def Mover(self,x,y):
         self.x = x
         self.y = y
     def Pos(self):
         return (int(self.x),int(self.y))
 
-jug1= Jugador(WH/2,space+(size/2))
-jug2= Jugador(WH/2,WH-(space+(size/2)))
+jug1= Jugador(WH/2,space+(size/2),2)
+jug2= Jugador(WH/2,WH-(space+(size/2)),5)
 
 #window
 pg.init()
@@ -87,28 +93,26 @@ while run:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             run = False
-            #aki
     
-    
-
     #Calls
     draw(win)
-    jug1.Dibujar(win,colors[2],12)
-    jug2.Dibujar(win,colors[5],12)
+    jug1.Dibujar(win,r)
+    jug2.Dibujar(win,r)
     pressed = pg.key.get_pressed()
     if pressed[pg.K_w]:
         if Turno:
-            Turnos(grid,jug1,jug2,81)
+            Turnos(grid,jug1,jug2,23)
         else:
-            Turnos(grid,jug2,jug1,81)
+            Turnos(grid,jug2,jug1,3)
         Turno = not Turno
-    
     pg.display.update()
-    
 
 
-
-
+# posible ventana de victoria
+# from tkinter import *
+# from tkinter import messagebox
+# Tk().wm_withdraw() #to hide the main window
+# messagebox.showinfo('Continue','OK')
 
 
 
