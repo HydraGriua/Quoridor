@@ -89,11 +89,12 @@ while run:
             run = False
             #aki
     
-    jug1.Dibujar(win,colors[2],12)
-    jug2.Dibujar(win,colors[5],12)
+    
 
     #Calls
     draw(win)
+    jug1.Dibujar(win,colors[2],12)
+    jug2.Dibujar(win,colors[5],12)
     pressed = pg.key.get_pressed()
     if pressed[pg.K_w]:
         if Turno:

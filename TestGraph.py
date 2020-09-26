@@ -18,8 +18,8 @@ def CreateGraph(Matrix,jugc):
    for j in range(N):
       if(Matrix[i][j] != 0):
         if((j,i) == jugc.Pos()):
-          g.nodes[ActualNode]['position']= None
-          g.nodes[ActualNode]['HasPosition'] = False
+          g.nodes[ActualNode]['position']= None #La coordenada
+          g.nodes[ActualNode]['HasPosition'] = False #
         else:
           g.nodes[ActualNode]['HasPosition'] = True
           g.nodes[ActualNode]['position']=(j,i)
@@ -113,9 +113,13 @@ def hallar_camino(G, s, v, camino):
 #BFS PATHFINDING
 def BFS(G,s):
   for _,u in G.nodes(data = True):
+    # _ es el prmer valor
+    #u es el 2do valor
+    #Todos los nodos tiene color blanco,padre ninguno y distancia ninguna
     u['color'] = 'Blanco'
     u['padre'] = None
     u['distance'] = None
+
   s['color'] = 'Gris'
   s['distance'] = 0
   s['padre'] = None
