@@ -27,14 +27,20 @@ def draw(win):
 def Turnos(grid,jug,jugc,pos):
     graph = CreateGraph(grid,jugc) 
     camino = []
+    i = 0
     startnode = [x for x,y in graph.nodes(data=True) if (y['position'] ==(int(jug.x),int(jug.y)) and y['HasPosition'] == True)]
     BFS(graph,graph.nodes[startnode[0]])
     hallar_camino(graph,graph.nodes[startnode[0]],graph.nodes[pos],camino)  
-    jug.Dibujar(win,colors[2],12)
-    x = graph.nodes[int(camino[1])]['position'][0]
-    y = graph.nodes[int(camino[1])]['position'][1]
+    i+=1
+    if len(camino) == 1:
+        x = graph.nodes[int(camino[0])]['position'][0]
+        y = graph.nodes[int(camino[0])]['position'][1]
+    else:
+        x = graph.nodes[int(camino[i])]['position'][0]
+        y = graph.nodes[int(camino[i])]['position'][1]
     pg.time.delay(200)
     jug.Mover(x,y)
+    jug.Dibujar(win,colors[2],12)
 
 
 
@@ -91,9 +97,9 @@ while run:
     pressed = pg.key.get_pressed()
     if pressed[pg.K_w]:
         if Turno:
-            Turnos(grid,jug1,jug2,77)
+            Turnos(grid,jug1,jug2,81)
         else:
-            Turnos(grid,jug2,jug1,77)
+            Turnos(grid,jug2,jug1,81)
         Turno = not Turno
     
     pg.display.update()
