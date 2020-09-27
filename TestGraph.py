@@ -7,7 +7,7 @@ global tiempo
 
 ##CREAR GRAFO
 def CreateGraph(Matrix,jugc):
-  g = nx.DiGraph()
+  g = nx.Graph()
   N = len(Matrix)
   
   for i in range(N * N):
@@ -36,7 +36,7 @@ def CreateGraph(Matrix,jugc):
   return g
 
 def CreateDownSideGraph(Matrix,jugc):
-  g = nx.DiGraph()
+  g = nx.Graph()
   N = len(Matrix)
   
   for i in reversed(range(N * N)):
