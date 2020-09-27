@@ -1,5 +1,6 @@
 import networkx as nx
 import queue
+import math
 import matplotlib.pyplot as plt
 global tiempo
 
@@ -16,7 +17,7 @@ def CreateGraph(Matrix,jugc):
   
   for i in range(N):
    for j in range(N):
-      if(Matrix[i][j] != 0):
+      if(Matrix[j][i] != 0):
         if((j,i) == jugc.Pos()):
           g.nodes[ActualNode]['position']= None #La coordenada
           g.nodes[ActualNode]['HasPosition'] = False #
@@ -45,7 +46,7 @@ def CreateDownSideGraph(Matrix,jugc):
   
   for i in reversed(range(N)):
    for j in reversed(range(N)):
-      if(Matrix[i][j] != 0):
+      if(Matrix[j][i] != 0):
         if((j,i) == jugc.Pos()):
           g.nodes[ActualNode]['position']= None
           g.nodes[ActualNode]['HasPosition'] = False
@@ -75,15 +76,20 @@ def DFS(G):
     if u['color'] == 'Blanco':
       DFS_Visit(G,u)
 
-
+#El Salto falta validar
 def DFS_Visit(G, u):
   global tiempo
   tiempo = tiempo + 1
   u['inicio'] = tiempo
   u['color'] = 'Gris'
+  nodos = len(list(G.nodes))
+  #if u['id'] == '1':
+   # u['padre']  = G.nodes[int(u['id']) + int(math.sqrt(nodos))]
+  # if u['id'] == str(nodos):
+  #   u['padre']  = G.nodes[int(u['id']) - int(math.sqrt(nodos))]
   for v_id in G.neighbors(int(u['id'])):
     v = G.nodes[v_id]
-    if v['color'] == 'Blanco':
+    if v['color'] == 'Blanco' and v['HasPosition'] == True:
       v['padre'] = u
       DFS_Visit(G, v)
   u['color'] = 'Negro'
@@ -98,17 +104,32 @@ def NodeExist(i,j,Matrix):
     return True 
   return False
 	  
-def hallar_camino(G, s, v, camino):
+def hallar_caminoD(G, s, v, camino):
+  if (v['id'] == s['id']):
+    camino.append(s['id'])
+  elif s['padre']['id'] == v['id']:
+    camino.append(v['id'])
+    return
+  elif v['padre'] == None:
+    camino.append(v['id'])
+    return
+  else:
+    hallar_caminoD(G,s,v['padre'],camino)
+    camino.append(v['id'])
+########################################
+
+def hallar_caminoB(G, s, v, camino):
   if (v['id'] == s['id']):
     camino.append(s['id'])
   elif v['padre'] == None:
     v = G.nodes[int(v['id'])-1]
-    hallar_camino(G,s,v,camino)
+    hallar_caminoB(G,s,v,camino)
     return
   else:
-    hallar_camino(G,s,v['padre'],camino)
+    hallar_caminoB(G,s,v['padre'],camino)
     camino.append(v['id'])
-########################################
+
+
 
 #BFS PATHFINDING
 def BFS(G,s):

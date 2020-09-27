@@ -28,13 +28,18 @@ def draw(win):
         x = space
         y+=size + space
 
-def Turnos(grid,jug,jugc,pos):
-    graph = CreateGraph(grid,jugc) 
+def Turnos(grid,jug,jugc,pos,turno):
+    if Turno:
+        graph = CreateGraph(grid,jugc) 
+    else:
+        graph = CreateDownSideGraph(grid,jugc)
     camino = []
     #i = 0
     startnode = [x for x,y in graph.nodes(data=True) if (y['position'] ==(int(jug.x),int(jug.y)) and y['HasPosition'] == True)]
-    BFS(graph,graph.nodes[startnode[0]])
-    hallar_camino(graph,graph.nodes[startnode[0]],graph.nodes[pos],camino)  
+    #BFS(graph,graph.nodes[startnode[0]])
+    DFS(graph)
+    #hallar_caminoB(graph,graph.nodes[startnode[0]],graph.nodes[pos],camino)  
+    hallar_caminoD(graph,graph.nodes[startnode[0]],graph.nodes[pos],camino)  
     #i+=1
     if len(camino) == 1:
         x = graph.nodes[int(camino[0])]['position'][0]
@@ -42,7 +47,7 @@ def Turnos(grid,jug,jugc,pos):
     else:
         x = graph.nodes[int(camino[1])]['position'][0]
         y = graph.nodes[int(camino[1])]['position'][1]
-    pg.time.delay(110)
+    pg.time.delay(100)
     jug.Mover(x,y)
         
     #jug.Dibujar(win,12)
@@ -101,9 +106,9 @@ while run:
     pressed = pg.key.get_pressed()
     if pressed[pg.K_w]:
         if Turno:
-            Turnos(grid,jug1,jug2,23)
+            Turnos(grid,jug1,jug2,n*n,Turno)
         else:
-            Turnos(grid,jug2,jug1,3)
+            Turnos(grid,jug2,jug1,1,Turno)
         Turno = not Turno
     pg.display.update()
 
