@@ -73,6 +73,8 @@ class Jugador():
 
 jug1= Jugador(WH/2,space+(size/2),2)
 jug2= Jugador(WH/2,WH-(space+(size/2)),5)
+jug3 = Jugador(WH-space,WH/2,5)
+jug4 = Jugador(space,WH/2,2)
 
 #window
 pg.init()
@@ -104,6 +106,8 @@ while run:
     draw(win)
     jug1.Dibujar(win,r)
     jug2.Dibujar(win,r)
+    jug3.Dibujar(win,r)
+    jug4.Dibujar(win,r)
     pressed = pg.key.get_pressed()
     if pressed[pg.K_w]:
         if Turno:
