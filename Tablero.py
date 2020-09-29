@@ -28,10 +28,39 @@ def draw(win):
         x = space
         y+=size + space
 
-def Eleccion(g,st,p,c):
-    for i in range(n):
-        hallar_caminoB(g,g.nodes[st[0]],g.nodes[p],c)
-
+def Eleccion(t,g,st,p,c):
+    n = int(math.sqrt(g.number_of_nodes()))
+    shortwin = n*n
+    caux = []
+    if t == 0:
+        for i in range(n):
+            hallar_caminoB(g,g.nodes[st[0]],g.nodes[p-i],caux)
+            if len(caux) < shortwin:
+                j = p-i
+                shortwin = len(caux)
+            caux = [] 
+    elif t == 1:
+        for i in range(n):
+            hallar_caminoB(g,g.nodes[st[0]],g.nodes[p+i],caux)
+            if len(caux) < shortwin:
+                j = p+i
+                shortwin = len(caux)
+            caux = []
+    elif t == 2:
+        for i in range(n):
+            hallar_caminoB(g,g.nodes[st[0]],g.nodes[p+(n*i)],caux)
+            if len(caux) < shortwin:
+                j = p+(n*i)
+                shortwin = len(caux)
+            caux = []
+    elif t == 3:
+        for i in range(n):
+            hallar_caminoB(g,g.nodes[st[0]],g.nodes[p-(n*i)],c)
+            if len(caux) < shortwin:
+                j = p-(n*i)
+                shortwin = len(caux)
+            caux = []
+    hallar_caminoB(g,g.nodes[st[0]],g.nodes[j],c)
 
 def Turnos(grid,jug,jugs,pos,turno):
     if Turno ==0 or Turno ==3:
@@ -44,7 +73,8 @@ def Turnos(grid,jug,jugs,pos,turno):
     BFS(graph,graph.nodes[startnode[0]])
     #DFS(graph)
     #Dijkstra(graph,graph.nodes[startnode[0]])
-    hallar_caminoB(graph,graph.nodes[startnode[0]],graph.nodes[pos],camino)  
+    Eleccion(Turno,graph,startnode,pos,camino)
+    #hallar_caminoB(graph,graph.nodes[startnode[0]],graph.nodes[pos],camino)  
     #hallar_caminoD(graph,graph.nodes[startnode[0]],graph.nodes[pos],camino)  
     #i+=1
     if len(camino) == 1:
@@ -125,11 +155,11 @@ while run:
             Turno += 1
         elif Turno == 2:
             jugs = [jug2,jug1,jug4]
-            Turnos(grid,jug3,jugs,n*(n//2)+1,Turno)
+            Turnos(grid,jug3,jugs,1,Turno)
             Turno += 1
         elif Turno == 3:
             jugs = [jug2,jug3,jug1]
-            Turnos(grid,jug4,jugs,n*(n//2),Turno)
+            Turnos(grid,jug4,jugs,n*n,Turno)
             Turno = 0
     pg.display.update()
 
