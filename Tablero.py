@@ -4,7 +4,7 @@ from TestGraph import *
 
 
 #Configs iniciales
-colors = [(255,255,255),(0,0,0),(255,0,0),(28,110,140),(208,204,208),(53,53,53),(39,65,86)]#bnr
+colors = [(255,255,255),(0,0,0),(237,106,90),(53,53,53),(244,241,187),(93,87,107),(28,110,140),(208,204,208),(39,65,86)]#bnr
 WH = 900
 i = 0
 
@@ -23,10 +23,15 @@ def draw(win):
     x,y=space,space
     for row in grid:
         for col in row:
-            pg.draw.rect(win,colors[4],[x,y,size,size])
+            pg.draw.rect(win,colors[7],[x,y,size,size])
             x+=size + space
         x = space
         y+=size + space
+
+def Eleccion(g,st,p,c):
+    for i in range(n):
+        hallar_caminoB(g,g.nodes[st[0]],g.nodes[p],c)
+
 
 def Turnos(grid,jug,jugs,pos,turno):
     if Turno ==0 or Turno ==3:
@@ -72,9 +77,9 @@ class Jugador():
         return (int(self.x),int(self.y))
 
 jug1= Jugador(WH/2,space+(size/2),2)
-jug2= Jugador(WH/2,WH-(space+(size/2)),5)
-jug3 = Jugador(WH-space,WH/2,5)
-jug4 = Jugador(space,WH/2,2)
+jug2= Jugador(WH/2,WH-(space+(size/2)),3)
+jug3 = Jugador(WH-space,WH/2,4)
+jug4 = Jugador(space,WH/2,5)
 
 #window
 pg.init()
@@ -83,7 +88,7 @@ pg.display.set_caption("Tablero version 1")
 run = True
 base_font= pg.font.Font(None,60)
 MenuLabel = "Jugar Corridor de " + str(n) +"X"+ str(n) 
-Label = base_font.render(MenuLabel,True,colors[5])
+Label = base_font.render(MenuLabel,True,colors[3])
 menu = True
 botonMenu = pg.Rect(300,400,500,60)
 while menu:
@@ -97,7 +102,7 @@ while menu:
     pg.display.update()
 Turno = 0
 while run:
-    win.fill(colors[3])
+    win.fill(colors[6])
     for event in pg.event.get():
         if event.type == pg.QUIT:
             run = False
