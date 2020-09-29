@@ -7,7 +7,7 @@ global tiempo
 
 ##CREAR GRAFO
 def CreateGraph(Matrix,jugc):
-  g = nx.DiGraph()
+  g = nx.Graph()
   N = len(Matrix)
   
   for i in range(N * N):
@@ -36,7 +36,7 @@ def CreateGraph(Matrix,jugc):
   return g
 
 def CreateDownSideGraph(Matrix,jugc):
-  g = nx.DiGraph()
+  g = nx.Graph()
   N = len(Matrix)
   
   for i in reversed(range(N * N)):
@@ -134,13 +134,30 @@ def hallar_caminoB(G, s, v, camino):
 #BFS PATHFINDING
 def BFS(G,s):
   for _,u in G.nodes(data = True):
-    # _ es el prmer valor
-    #u es el 2do valor
-    #Todos los nodos tiene color blanco,padre ninguno y distancia ninguna
     u['color'] = 'Blanco'
     u['padre'] = None
-    u['distance'] = None
+  s['color'] = 'Gris'
+  s['padre'] = None
+  q = queue.Queue()
+  q.put(s)
+  while not q.empty():
+    u = q.get()
+    for v_id in G.neighbors(int(u['id'])):
+      v = G.nodes[v_id]
+      if v['color'] == 'Blanco':
+        v['color'] = 'Gris'
+        v['padre'] = u
+        q.put(v)
+      u['color'] = 'Negro'
 
+
+
+
+def Dijkstra(G,s):
+  for _,u in G.nodes(data = True):
+    u['color'] = 'Blanco'
+    u['padre'] = None
+    u['distance'] = 0
   s['color'] = 'Gris'
   s['distance'] = 0
   s['padre'] = None
@@ -150,12 +167,13 @@ def BFS(G,s):
     u = q.get()
     for v_id in G.neighbors(int(u['id'])):
       v = G.nodes[v_id]
-      if v['color'] == 'Blanco' and v['HasPosition'] == True:
-        v['color'] = 'Gris'
-        v['padre'] = u
-        v['distance'] = u['distance'] + 1
-        q.put(v)
-      u['color'] = 'Negro'
+      if v['color'] == 'Blanco':
+        if v['distance'] >= u['distance']:
+          v['color'] = 'Gris'
+          v['padre'] = u
+          v['distance'] = u['distance']  
+          q.put(v)
+      u['color'] = 'Negro'  
 
 tiempo = 0
 
