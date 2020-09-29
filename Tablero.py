@@ -28,11 +28,11 @@ def draw(win):
         x = space
         y+=size + space
 
-def Turnos(grid,jug,jugc,pos,turno):
-    if Turno:
-        graph = CreateGraph(grid,jugc) 
+def Turnos(grid,jug,jugs,pos,turno):
+    if Turno ==0 or Turno ==3:
+        graph = CreateGraph(grid,jugs) 
     else:
-        graph = CreateDownSideGraph(grid,jugc)
+        graph = CreateDownSideGraph(grid,jugs)
     camino = []
     #i = 0
     startnode = [x for x,y in graph.nodes(data=True) if (y['position'] ==(int(jug.x),int(jug.y)) and y['HasPosition'] == True)]
@@ -95,7 +95,7 @@ while menu:
     pg.draw.rect(win,colors[0],botonMenu)
     win.blit(Label,(botonMenu.x+5,botonMenu.y+5))
     pg.display.update()
-Turno = True
+Turno = 0
 while run:
     win.fill(colors[3])
     for event in pg.event.get():
@@ -110,11 +110,22 @@ while run:
     jug4.Dibujar(win,r)
     pressed = pg.key.get_pressed()
     if pressed[pg.K_w]:
-        if Turno:
-            Turnos(grid,jug1,jug2,n*n,Turno)
-        else:
-            Turnos(grid,jug2,jug1,1,Turno)
-        Turno = not Turno
+        if Turno == 0:
+            jugs = [jug2,jug3,jug4]
+            Turnos(grid,jug1,jugs,n*n,Turno)
+            Turno += 1
+        elif Turno == 1:
+            jugs = [jug1,jug3,jug4]
+            Turnos(grid,jug2,jugs,1,Turno)
+            Turno += 1
+        elif Turno == 2:
+            jugs = [jug2,jug1,jug4]
+            Turnos(grid,jug3,jugs,n*(n//2)+1,Turno)
+            Turno += 1
+        elif Turno == 3:
+            jugs = [jug2,jug3,jug1]
+            Turnos(grid,jug4,jugs,n*(n//2),Turno)
+            Turno = 0
     pg.display.update()
 
 

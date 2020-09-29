@@ -6,7 +6,7 @@ global tiempo
 
 
 ##CREAR GRAFO
-def CreateGraph(Matrix,jugc):
+def CreateGraph(Matrix,jugs):
   g = nx.Graph()
   N = len(Matrix)
   
@@ -18,7 +18,7 @@ def CreateGraph(Matrix,jugc):
   for i in range(N):
    for j in range(N):
       if(Matrix[j][i] != 0):
-        if((j,i) == jugc.Pos()):
+        if (j,i) == jugs[0].Pos() or (j,i) == jugs[1].Pos() or (j,i) == jugs[2].Pos():
           g.nodes[ActualNode]['position']= None #La coordenada
           g.nodes[ActualNode]['HasPosition'] = False #
         else:
@@ -35,7 +35,7 @@ def CreateGraph(Matrix,jugc):
       ActualNode += 1
   return g
 
-def CreateDownSideGraph(Matrix,jugc):
+def CreateDownSideGraph(Matrix,jugs):
   g = nx.Graph()
   N = len(Matrix)
   
@@ -47,7 +47,7 @@ def CreateDownSideGraph(Matrix,jugc):
   for i in reversed(range(N)):
    for j in reversed(range(N)):
       if(Matrix[j][i] != 0):
-        if((j,i) == jugc.Pos()):
+        if (j,i) == jugs[0].Pos() or (j,i) == jugs[1].Pos() or (j,i) == jugs[2].Pos():
           g.nodes[ActualNode]['position']= None
           g.nodes[ActualNode]['HasPosition'] = False
         else:
