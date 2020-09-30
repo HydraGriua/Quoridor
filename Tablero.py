@@ -1,7 +1,8 @@
 import pygame as pg
 import sys
 from TestGraph import *
-
+from tkinter import *
+from tkinter import messagebox
 
 #Configs iniciales
 colors = [(255,255,255),(0,0,0),(237,106,90),(53,53,53),(244,241,187),(93,87,107),(28,110,140),(208,204,208),(39,65,86)]#bnr
@@ -92,6 +93,11 @@ def Turnos(grid,jug,jugs,pos,turno):
     if len(camino) == 1:
         x = graph.nodes[int(camino[0])]['position'][0]
         y = graph.nodes[int(camino[0])]['position'][1]
+        Tk().wm_withdraw()
+        messagebox.showinfo('Ganó el jugador en la posicion ' + str(jug.Pos()),'Salir')
+        run = False
+        pg.display.quit()
+        pg.quit()
     else:
         x = graph.nodes[int(camino[1])]['position'][0]
         y = graph.nodes[int(camino[1])]['position'][1]
@@ -120,8 +126,9 @@ class Jugador():
 
 jug1= Jugador(WH/2,space+(size/2),2)
 jug2= Jugador(WH/2,WH-(space+(size/2)),3)
-jug3 = Jugador(WH-space,WH/2,4)
-jug4 = Jugador(space,WH/2,5)
+
+jug3 = Jugador(WH-(space+(size/2)),WH/2,5)
+jug4 = Jugador(space+(size/2),WH/2,4)
 
 #window
 pg.init()
@@ -173,14 +180,15 @@ while run:
             jugs = [jug2,jug3,jug1]
             Turnos(grid,jug4,jugs,n*n,Turno)
             Turno = 0
-    pg.display.update()
-
+    try:
+        pg.display.update()
+    except:
+        run = False
 
 # posible ventana de victoria
-# from tkinter import *
-# from tkinter import messagebox
-# Tk().wm_withdraw() #to hide the main window
-# messagebox.showinfo('Continue','OK')
+
+ #to hide the main window
+ 
 
 
 
