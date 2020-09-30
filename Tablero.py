@@ -5,12 +5,11 @@ from tkinter import *
 from tkinter import messagebox
 import time
 sys.setrecursionlimit(10**7)
+
 #Configs iniciales
 colors = [(255,255,255),(0,0,0),(237,106,90),(53,53,53),(244,241,187),(93,87,107),(28,110,140),(208,204,208),(39,65,86)]#bnr
 WH = 900
 i = 0
-
-
 #Medidas para graficar
 n = int(input(" ingrese x (tablero sera de x * x):"))
 grid = [[1]*n for x in range(n)]
@@ -82,7 +81,6 @@ def Turnos(grid,jug,jugs,pos,turno):
     else:
         graph = CreateDownSideGraph(grid,jugs)
     camino = []
-    #i = 0
     startnode = [x for x,y in graph.nodes(data=True) if (y['position'] ==(int(jug.x),int(jug.y)) and y['HasPosition'] == True)]
     #BFS(graph,graph.nodes[startnode[0]])
     #DFS(graph)
@@ -92,9 +90,7 @@ def Turnos(grid,jug,jugs,pos,turno):
     #print (end-start)
     
     Eleccion(Turno,graph,startnode,pos,camino,jugs)
-    #hallar_caminoB(graph,graph.nodes[startnode[0]],graph.nodes[pos],camino)  
-    #hallar_caminoD(graph,graph.nodes[startnode[0]],graph.nodes[pos],camino)  
-    #i+=1
+
     if len(camino) == 1:
         x = graph.nodes[int(camino[0])]['position'][0]
         y = graph.nodes[int(camino[0])]['position'][1]
@@ -108,9 +104,6 @@ def Turnos(grid,jug,jugs,pos,turno):
         y = graph.nodes[int(camino[1])]['position'][1]
     pg.time.delay(100)
     jug.Mover(x,y)
-        
-    #jug.Dibujar(win,12)
-
 
 
 #pos inicial jugadores 
@@ -131,7 +124,6 @@ class Jugador():
 
 jug1= Jugador(WH/2,space+(size/2),2)
 jug2= Jugador(WH/2,WH-(space+(size/2)),3)
-
 jug3 = Jugador(WH-(space+(size/2)),WH/2,5)
 jug4 = Jugador(space+(size/2),WH/2,4)
 
@@ -149,8 +141,7 @@ while menu:
     for event in pg.event.get():
         if event.type == pg.MOUSEBUTTONDOWN:
             if botonMenu.collidepoint(event.pos):
-                menu = False
-    
+                menu = False   
     pg.draw.rect(win,colors[0],botonMenu)
     win.blit(Label,(botonMenu.x+5,botonMenu.y+5))
     pg.display.update()
@@ -159,8 +150,7 @@ while run:
     win.fill(colors[6])
     for event in pg.event.get():
         if event.type == pg.QUIT:
-            run = False
-    
+            run = False   
     #Calls
     draw(win)
     jug1.Dibujar(win,r)
@@ -189,10 +179,6 @@ while run:
         pg.display.update()
     except:
         run = False
-
-# posible ventana de victoria
-
- #to hide the main window
  
 
 
