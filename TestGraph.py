@@ -6,13 +6,8 @@ global tiempo
 
 
 ##CREAR GRAFO
-<<<<<<< HEAD
-def CreateGraph(Matrix,jugc):
-  g = nx.DiGraph()
-=======
 def CreateGraph(Matrix,jugs):
   g = nx.Graph()
->>>>>>> Tests
   N = len(Matrix)
   
   for i in range(N * N):
@@ -40,13 +35,8 @@ def CreateGraph(Matrix,jugs):
       ActualNode += 1
   return g
 
-<<<<<<< HEAD
-def CreateDownSideGraph(Matrix,jugc):
-  g = nx.DiGraph()
-=======
 def CreateDownSideGraph(Matrix,jugs):
   g = nx.Graph()
->>>>>>> Tests
   N = len(Matrix)
   
   for i in reversed(range(N * N)):
