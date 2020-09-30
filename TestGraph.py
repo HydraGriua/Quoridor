@@ -144,7 +144,7 @@ def BFS(G,s):
     u = q.get()
     for v_id in G.neighbors(int(u['id'])):
       v = G.nodes[v_id]
-      if v['color'] == 'Blanco':
+      if v['color'] == 'Blanco' and v['HasPosition'] == True:
         v['color'] = 'Gris'
         v['padre'] = u
         q.put(v)
@@ -167,7 +167,7 @@ def Dijkstra(G,s):
     u = q.get()
     for v_id in G.neighbors(int(u['id'])):
       v = G.nodes[v_id]
-      if v['color'] == 'Blanco':
+      if v['color'] == 'Blanco' and v['HasPosition'] == True:
         if v['distance'] >= u['distance']:
           v['color'] = 'Gris'
           v['padre'] = u

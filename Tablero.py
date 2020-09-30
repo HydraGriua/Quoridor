@@ -34,44 +34,49 @@ def Eleccion(t,g,st,p,c):
     caux = []
     if t == 0:
         for i in range(n):
-            hallar_caminoB(g,g.nodes[st[0]],g.nodes[p-i],caux)
+            #hallar_caminoB(g,g.nodes[st[0]],g.nodes[p-i],caux)
+            hallar_caminoD(g,g.nodes[st[0]],g.nodes[p-i],caux)
             if len(caux) < shortwin:
                 j = p-i
                 shortwin = len(caux)
             caux = [] 
     elif t == 1:
         for i in range(n):
-            hallar_caminoB(g,g.nodes[st[0]],g.nodes[p+i],caux)
+            #hallar_caminoB(g,g.nodes[st[0]],g.nodes[p+i],caux)
+            hallar_caminoD(g,g.nodes[st[0]],g.nodes[p+i],caux)
+
             if len(caux) < shortwin:
                 j = p+i
                 shortwin = len(caux)
             caux = []
     elif t == 2:
         for i in range(n):
-            hallar_caminoB(g,g.nodes[st[0]],g.nodes[p+(n*i)],caux)
+            #hallar_caminoB(g,g.nodes[st[0]],g.nodes[p+(n*i)],caux)
+            hallar_caminoD(g,g.nodes[st[0]],g.nodes[p+(n*i)],caux)
             if len(caux) < shortwin:
                 j = p+(n*i)
                 shortwin = len(caux)
             caux = []
     elif t == 3:
         for i in range(n):
-            hallar_caminoB(g,g.nodes[st[0]],g.nodes[p-(n*i)],c)
+            #hallar_caminoB(g,g.nodes[st[0]],g.nodes[p-(n*i)],c)
+            hallar_caminoD(g,g.nodes[st[0]],g.nodes[p-(n*i)],c)
             if len(caux) < shortwin:
                 j = p-(n*i)
                 shortwin = len(caux)
             caux = []
-    hallar_caminoB(g,g.nodes[st[0]],g.nodes[j],c)
+    hallar_caminoD(g,g.nodes[st[0]],g.nodes[j],c)
 
 def Turnos(grid,jug,jugs,pos,turno):
-    if Turno ==0 or Turno ==3:
+    if Turno == 0 or Turno == 3:
         graph = CreateGraph(grid,jugs) 
     else:
         graph = CreateDownSideGraph(grid,jugs)
     camino = []
     #i = 0
     startnode = [x for x,y in graph.nodes(data=True) if (y['position'] ==(int(jug.x),int(jug.y)) and y['HasPosition'] == True)]
-    BFS(graph,graph.nodes[startnode[0]])
-    #DFS(graph)
+    #BFS(graph,graph.nodes[startnode[0]])
+    DFS(graph)
     #Dijkstra(graph,graph.nodes[startnode[0]])
     Eleccion(Turno,graph,startnode,pos,camino)
     #hallar_caminoB(graph,graph.nodes[startnode[0]],graph.nodes[pos],camino)  
