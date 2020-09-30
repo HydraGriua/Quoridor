@@ -6,8 +6,13 @@ global tiempo
 
 
 ##CREAR GRAFO
+<<<<<<< HEAD
 def CreateGraph(Matrix,jugc):
   g = nx.DiGraph()
+=======
+def CreateGraph(Matrix,jugs):
+  g = nx.Graph()
+>>>>>>> Tests
   N = len(Matrix)
   
   for i in range(N * N):
@@ -18,7 +23,7 @@ def CreateGraph(Matrix,jugc):
   for i in range(N):
    for j in range(N):
       if(Matrix[j][i] != 0):
-        if((j,i) == jugc.Pos()):
+        if (j,i) == jugs[0].Pos() or (j,i) == jugs[1].Pos() or (j,i) == jugs[2].Pos():
           g.nodes[ActualNode]['position']= None #La coordenada
           g.nodes[ActualNode]['HasPosition'] = False #
         else:
@@ -35,8 +40,13 @@ def CreateGraph(Matrix,jugc):
       ActualNode += 1
   return g
 
+<<<<<<< HEAD
 def CreateDownSideGraph(Matrix,jugc):
   g = nx.DiGraph()
+=======
+def CreateDownSideGraph(Matrix,jugs):
+  g = nx.Graph()
+>>>>>>> Tests
   N = len(Matrix)
   
   for i in reversed(range(N * N)):
@@ -47,7 +57,7 @@ def CreateDownSideGraph(Matrix,jugc):
   for i in reversed(range(N)):
    for j in reversed(range(N)):
       if(Matrix[j][i] != 0):
-        if((j,i) == jugc.Pos()):
+        if (j,i) == jugs[0].Pos() or (j,i) == jugs[1].Pos() or (j,i) == jugs[2].Pos():
           g.nodes[ActualNode]['position']= None
           g.nodes[ActualNode]['HasPosition'] = False
         else:
@@ -157,6 +167,34 @@ def BFS(G,s):
         q.put(v)
       u['color'] = 'Negro'
 
+<<<<<<< HEAD
+=======
+
+
+
+def Dijkstra(G,s):
+  for _,u in G.nodes(data = True):
+    u['color'] = 'Blanco'
+    u['padre'] = None
+    u['distance'] = 0
+  s['color'] = 'Gris'
+  s['distance'] = 0
+  s['padre'] = None
+  q = queue.Queue()
+  q.put(s)
+  while not q.empty():
+    u = q.get()
+    for v_id in G.neighbors(int(u['id'])):
+      v = G.nodes[v_id]
+      if v['color'] == 'Blanco' and v['HasPosition'] == True:
+        if v['distance'] >= u['distance']:
+          v['color'] = 'Gris'
+          v['padre'] = u
+          v['distance'] = u['distance']  
+          q.put(v)
+      u['color'] = 'Negro'  
+
+>>>>>>> Tests
 tiempo = 0
 
 
