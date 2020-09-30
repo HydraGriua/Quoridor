@@ -157,8 +157,6 @@ def BFS(G,s):
         q.put(v)
       u['color'] = 'Negro'
 
-<<<<<<< HEAD
-=======
 
 
 
@@ -184,7 +182,6 @@ def Dijkstra(G,s):
           q.put(v)
       u['color'] = 'Negro'  
 
->>>>>>> Tests
 tiempo = 0
 
 

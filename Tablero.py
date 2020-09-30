@@ -77,15 +77,10 @@ def Turnos(grid,jug,jugs,pos,turno):
     startnode = [x for x,y in graph.nodes(data=True) if (y['position'] ==(int(jug.x),int(jug.y)) and y['HasPosition'] == True)]
     #BFS(graph,graph.nodes[startnode[0]])
     DFS(graph)
-<<<<<<< HEAD
-    #hallar_caminoB(graph,graph.nodes[startnode[0]],graph.nodes[pos],camino)  
-    hallar_caminoD(graph,graph.nodes[startnode[0]],graph.nodes[pos],camino)  
-=======
     #Dijkstra(graph,graph.nodes[startnode[0]])
     Eleccion(Turno,graph,startnode,pos,camino)
     #hallar_caminoB(graph,graph.nodes[startnode[0]],graph.nodes[pos],camino)  
     #hallar_caminoD(graph,graph.nodes[startnode[0]],graph.nodes[pos],camino)  
->>>>>>> Tests
     #i+=1
     if len(camino) == 1:
         x = graph.nodes[int(camino[0])]['position'][0]
