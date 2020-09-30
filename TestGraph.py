@@ -4,7 +4,6 @@ import math
 import matplotlib.pyplot as plt
 global tiempo
 
-
 ##CREAR GRAFO
 def CreateGraph(Matrix,jugs):
   g = nx.Graph()
@@ -129,8 +128,6 @@ def hallar_caminoB(G, s, v, camino):
     hallar_caminoB(G,s,v['padre'],camino)
     camino.append(v['id'])
 
-
-
 #BFS PATHFINDING
 def BFS(G,s):
   for _,u in G.nodes(data = True):
@@ -157,9 +154,6 @@ def BFS(G,s):
         q.put(v)
       u['color'] = 'Negro'
 
-
-
-
 def Dijkstra(G,s):
   for _,u in G.nodes(data = True):
     u['color'] = 'Blanco'
@@ -183,6 +177,3 @@ def Dijkstra(G,s):
       u['color'] = 'Negro'  
 
 tiempo = 0
-
-
-
