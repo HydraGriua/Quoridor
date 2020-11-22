@@ -31,6 +31,7 @@ class Player():
         elif(self.firstY == (numBoxes//2)+1 and difX > 0):
             cvic = [0,1] # [x, 1]
         self.victory = cvic
+
     def drawPlayer(self, window):
         pg.draw.circle(window, self.colorPlayer, (int(self.coordX), int(self.coordY)), int(self.lenghtStep / 4))
     def movePlayer(self, indexX, indexY):
@@ -136,11 +137,11 @@ class Table():
         window = pg.display.set_mode((self.lenghtTable, self.lenghtTable))
         pg.display.set_caption("Tablero de Quoridor v3")
         run = True
-        
         wall1 = Wall(5,5,5,6)
         wall2 = Wall(3,3,4,3)
-        self.tableGraph.insertedWall(wall1)
-        self.tableGraph.insertedWall(wall2)
+        walls=[wall1,wall2]
+        for wall in walls:
+            self.tableGraph.insertedWall(wall)
         while run:
             window.fill(colors[6])
             for event in pg.event.get():
@@ -149,9 +150,8 @@ class Table():
             self.generateTable(window)
             for p in players:
                 p.drawPlayer(window)
-            
-            wall1.drawWall(window, self.colors[7], self.lenghtBox)
-            wall2.drawWall(window,self.colors[7],self.lenghtBox)
+            for wall in walls:
+               wall.drawWall(window, self.colors[7], self.lenghtBox)
 
             pressed = pg.key.get_pressed()
             won = [False,0]
@@ -287,8 +287,3 @@ p2 = table.generatePlayer(1,numberBoxes//2+1,2,numberBoxes)
 p3 = table.generatePlayer(numberBoxes,numberBoxes//2+1,3,numberBoxes)
 p4 = table.generatePlayer(numberBoxes//2+1,numberBoxes,4,numberBoxes)
 table.generateWindow([p1,p2,p3,p4])
-
-
-
-
-
