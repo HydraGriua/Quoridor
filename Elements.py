@@ -207,9 +207,30 @@ class Table():
         pts = player.victory
         allNodes = [node for node,val in self.tableGraph.matchGraph.nodes(data = True) if ((pts[0] == 0 and val['indexX'] == pts[1]) or (pts[0] == 1 and val['indexY'] == pts[1]))]
         for node in allNodes:
-            way = findShortPathBFS(self.tableGraph.matchGraph, startnode, node, self.numberBoxes**2,player.name,players)
-            caux.append([way, len(way)])
+            way = findShortPathBFS(self.tableGraph.matchGraph, startnode, node, self.numberBoxes**2,player.name)
+            #########################
             self.tableGraph.cleanVisited()
+            for p in players:
+                node = p.stablishNode(self.tableGraph.matchGraph)
+                lp2 = players.copy()
+                if node == way[-1]:
+                    self.tableGraph.matchGraph.nodes[node]['occupied'] = True
+                    lp2.remove(p)
+                    for pera in lp2:
+                        if way[-2] == pera.stablishNode(self.tableGraph.matchGraph):
+                            self.tableGraph.matchGraph.nodes[way[-2]]['ocuppied'] = True
+                            li = []
+                            for i in self.tableGraph.matchGraph.neighbors(way[-1]):
+                                li.append(i)
+                            for i in li:
+                                if (i == way[-2] or self.tableGraph.matchGraph.nodes[i]['occupied'] == True or i == player.stablishNode(self.tableGraph.matchGraph)):
+                                    li.remove(i)
+                            way[-1] = li[0]
+                            #self.tableGraph.matchGraph.nodes[node]['occupied'] = False 
+                    
+            ############################
+            caux.append([way, len(way)])
+            #self.tableGraph.cleanVisited()
             #programacion dinamica
         shortestWay = min(caux, key=lambda x:x[1])
         return shortestWay[0]
@@ -222,7 +243,7 @@ class Table():
                 node = self.tableGraph.matchGraph.nodes[winPath[-2]]
             else:
                 node = self.tableGraph.matchGraph.nodes[winPath[-1]]
-            print(node)
+            #print(node)
             #node = [v for x,v in self.tableGraph.matchGraph.nodes(data=True) if (self.tableGraph.matchGraph.nodes[x]['id'] == winPath[-1])]
             player.movePlayer(node['indexX'],node['indexY'])
             return [False,player.name]
@@ -264,7 +285,7 @@ def BFSBase(graph, source, destiny, numberVertex, parents, distances, Nplayer):
                     return True
     return False
 
-def findShortPathBFS(graph, source, destiny, numberVertex, NPlayer,players):
+def findShortPathBFS(graph, source, destiny, numberVertex, NPlayer):
     parents = []
     distances = []
 
@@ -278,13 +299,6 @@ def findShortPathBFS(graph, source, destiny, numberVertex, NPlayer,players):
         shortPath.append(parents[auxDest])
         auxDest = parents[auxDest]
     shortPath.pop(len(shortPath)-1)
-    for p in players:
-        node = p.stablishNode(graph)
-        listaea = []
-        for nodeg in  graph.neighbors(shortPath[-1]):
-            listaea.append(nodeg)
-        if node in listaea:
-            graph.nodes[node]['occupied'] = True
     return list(shortPath)
 
 ##### Dijkstra ####
