@@ -113,8 +113,6 @@ class TableGraph():
         node1 = objWall.nodesBlocked[0]
         node2 = objWall.nodesBlocked[1]
         n1,n2 = 0,0
-        #n3 = [node for node, info in self.matchGraph.nodes(data = True) if (node1[0] == info['indexX'] and node1[1] == info['indexY'])]
-        #n4 = [node for node, info in self.matchGraph.nodes(data = True) if (node2[0] == info['indexX'] and node2[1] == info['indexY'])]
         for node,info in self.matchGraph.nodes(data = True):
             if(info['indexX'] == node1[0] and info['indexY'] == node1[1]):
                 n1 = node
@@ -138,11 +136,7 @@ class Table():
         window = pg.display.set_mode((self.lenghtTable, self.lenghtTable))
         pg.display.set_caption("Tablero de Quoridor v3")
         run = True
-        wall1 = Wall(5,5,5,6)
-        wall2 = Wall(3,3,4,3)
-        walls=[wall1,wall2]
-        for wall in walls:
-            self.tableGraph.insertedWall(wall)
+        walls=[]
         while run:
             window.fill(colors[6])
             for event in pg.event.get():
@@ -152,12 +146,12 @@ class Table():
             for p in players:
                 p.drawPlayer(window)
             for wall in walls:
-               wall.drawWall(window, self.colors[7], self.lenghtBox)
+               wall.drawWall(window, self.colors[8], self.lenghtBox)
 
             pressed = pg.key.get_pressed()
             won = [False,0]
+            pg.display.set_caption("Tablero de Quoridor v3 || Turno de Jugador: " + str(self.numberTurn))
             if pressed[pg.K_w]:
-                pg.display.set_caption("Tablero de Quoridor v3 || Turno de Jugador: " + str(self.numberTurn))
                 if self.numberTurn == 1:
                     won = self.turn(players[0],[players[1],players[2],players[3]])
                     self.numberTurn += 1
@@ -171,6 +165,28 @@ class Table():
                     won = self.turn(players[3],[players[0],players[1],players[2]])
                     self.numberTurn = 1
                 self.tableGraph.cleanVisited()
+            if pressed[pg.K_s]:
+                ax, ay, dx, dy, direc = map(int, input().split())
+                bx,by,cx,cy = dx,ay,ax,dy
+                walla = 0
+                wallb = 0
+                if direc == 1:
+                    walla = Wall(ax,ay,cx,cy)
+                    wallb = Wall(bx,by,dx,dy)
+                else:
+                    walla = Wall(ax,ay,bx,by)
+                    wallb = Wall(cx,cy,dx,dy)
+                self.tableGraph.insertedWall(walla)
+                self.tableGraph.insertedWall(wallb)
+                walls.append(walla)
+                walls.append(wallb)
+
+                if self.numberTurn <4:
+                    self.numberTurn += 1
+                else:
+                    self.numberTurn =1
+
+            
             pg.time.delay(100)
             pg.display.update()
             if won[0] == True:
@@ -197,9 +213,6 @@ class Table():
     def generatePlayer(self, idx, idy, numberPlayer, numBoxes):
        p = Player(idx,idy,self.lenghtBox, numberPlayer,self.colors[numberPlayer], numBoxes)
        return p
-    #defgenerateWall(self):
-        #rIndexX, rIndexY = rd.randint(1,9), rd.randint(1,9)
-        #rNode = [n for n,v in self.tableGraph.matchGraph.nodes(data=True) if(rIndexX == v['indexX'] and rIndexY==v['indexY'])]
     def pickUp(self,player,players):
         startnode = player.stablishNode(self.tableGraph.matchGraph)
         caux = []
@@ -226,30 +239,23 @@ class Table():
                                 if (i == way[-2] or self.tableGraph.matchGraph.nodes[i]['occupied'] == True or i == player.stablishNode(self.tableGraph.matchGraph)):
                                     li.remove(i)
                             way[-1] = li[0]
-                            #self.tableGraph.matchGraph.nodes[node]['occupied'] = False 
                     
             ############################
             caux.append([way, len(way)])
-            #self.tableGraph.cleanVisited()
-            #programacion dinamica
         shortestWay = min(caux, key=lambda x:x[1])
         return shortestWay[0]
 
     def turn(self, player,players):
-        #winPath = findShortPathBFS(self.tableGraph.matchGraph, startnode, player.victory, self.numberBoxes**2, 1)
         winPath = self.pickUp(player,players)
         if(len(winPath)>1):
             if self.tableGraph.matchGraph.nodes[winPath[-1]]['occupied']:
                 node = self.tableGraph.matchGraph.nodes[winPath[-2]]
             else:
                 node = self.tableGraph.matchGraph.nodes[winPath[-1]]
-            #print(node)
-            #node = [v for x,v in self.tableGraph.matchGraph.nodes(data=True) if (self.tableGraph.matchGraph.nodes[x]['id'] == winPath[-1])]
             player.movePlayer(node['indexX'],node['indexY'])
             return [False,player.name]
         else:
             node = self.tableGraph.matchGraph.nodes[winPath[-1]]
-            #node = [v for x,v in self.tableGraph.matchGraph.nodes(data=True) if (self.tableGraph.matchGraph.nodes[x]['id'] == winPath[-1])]
             player.movePlayer(node['indexX'],node['indexY'])
             return [True,player.name]
 
@@ -262,8 +268,6 @@ def BFSBase(graph, source, destiny, numberVertex, parents, distances, Nplayer):
     for i in range(numberVertex+1):
         distances.append(numberVertex*2)
         parents.append(-1)
-    #s = [node for node,info in graph.nodes(data = True) if(source[0] == info['indexX'] and source[1] == info['indexY'])]
-    #d = [node for node,info in graph.nodes(data = True) if(destiny[0] == info['indexX'] and destiny[1] == info['indexY'])]
     s = source
     d = destiny
     graph.nodes[s]['visited'].append(Nplayer)
@@ -276,7 +280,6 @@ def BFSBase(graph, source, destiny, numberVertex, parents, distances, Nplayer):
         for ngh in graph.neighbors(current):
             if(Nplayer not in graph.nodes[ngh]['visited']):
                 graph.nodes[ngh]['visited'].append(Nplayer)
-            #if ngh != parents[current]:
                 distances[ngh] = distances[current] + 1
                 parents[ngh] = current
                 queue.append(ngh)
@@ -301,15 +304,11 @@ def findShortPathBFS(graph, source, destiny, numberVertex, NPlayer):
     shortPath.pop(len(shortPath)-1)
     return list(shortPath)
 
-##### Dijkstra ####
-#defDijkstraAlgo(graph, source):
-#    for node,prop in graph.nodes(data = True):
 
 
 ##################### INPUT TIME ##########################
-colors = [(255,255,255),(0,0,0),(237,106,90),(53,53,53),(244,241,187),(93,87,107),(28,110,140),(208,204,208),(39,65,86)]#bnr
+colors = [(255,255,255),(0,0,0),(237,106,90),(53,53,53),(244,241,187),(93,87,107),(28,110,140),(208,204,208),(195,235,120)]#bnr
 numberBoxes = int(input('Ingrese el número de casillas de Quoridor: '))
-numberWalls = int(input('Ingrese el número de muros (máximo 4): '))
 mtx = [[1] * numberBoxes for i in range(numberBoxes)]
 table = Table(numberBoxes, 625, mtx, colors, 0)
 p1 = table.generatePlayer(numberBoxes//2+1,1,1,numberBoxes)
