@@ -91,7 +91,7 @@ class TableGraph():
             else:
                 idx = int(numberNode - ((numberNode//self.numberBoxes)*self.numberBoxes))
                 idy = int((numberNode//self.numberBoxes)+1)
-            self.matchGraph.add_node(numberNode, indexX = idx, indexY = idy, visited=[], id= numberNode)
+            self.matchGraph.add_node(numberNode, indexX = idx, indexY = idy, visited=[], id= numberNode, occupied = False)
         
         for numNode in range(1,(self.numberBoxes**2)+1):
             actualNode = self.matchGraph.nodes[numNode]
@@ -107,6 +107,7 @@ class TableGraph():
     def cleanVisited(self):
         for node,prop in self.matchGraph.nodes(data= True):
             self.matchGraph.nodes[node]['visited'] = []
+            self.matchGraph.nodes[node]['occupied'] = False
 
     def insertedWall(self, objWall): #funcion que se llama cada vez que se inserta un muro
         node1 = objWall.nodesBlocked[0]
@@ -158,16 +159,16 @@ class Table():
             if pressed[pg.K_w]:
                 pg.display.set_caption("Tablero de Quoridor v3 || Turno de Jugador: " + str(self.numberTurn))
                 if self.numberTurn == 1:
-                    won = self.turn(players[0])
+                    won = self.turn(players[0],[players[1],players[2],players[3]])
                     self.numberTurn += 1
                 elif self.numberTurn == 2:
-                    won = self.turn(players[1])
+                    won = self.turn(players[1],[players[0],players[2],players[3]])
                     self.numberTurn += 1
                 elif self.numberTurn == 3:
-                    won = self.turn(players[2])
+                    won = self.turn(players[2],[players[1],players[0],players[3]])
                     self.numberTurn += 1
                 elif self.numberTurn == 4:
-                    won = self.turn(players[3])
+                    won = self.turn(players[3],[players[0],players[1],players[2]])
                     self.numberTurn = 1
                 self.tableGraph.cleanVisited()
             pg.time.delay(100)
@@ -199,29 +200,37 @@ class Table():
     #defgenerateWall(self):
         #rIndexX, rIndexY = rd.randint(1,9), rd.randint(1,9)
         #rNode = [n for n,v in self.tableGraph.matchGraph.nodes(data=True) if(rIndexX == v['indexX'] and rIndexY==v['indexY'])]
-    def pickUp(self,player):
+    def pickUp(self,player,players):
         startnode = player.stablishNode(self.tableGraph.matchGraph)
         caux = []
         allNodes = []
         pts = player.victory
         allNodes = [node for node,val in self.tableGraph.matchGraph.nodes(data = True) if ((pts[0] == 0 and val['indexX'] == pts[1]) or (pts[0] == 1 and val['indexY'] == pts[1]))]
         for node in allNodes:
-            way = findShortPathBFS(self.tableGraph.matchGraph, startnode, node, self.numberBoxes**2,player.name)
+            way = findShortPathBFS(self.tableGraph.matchGraph, startnode, node, self.numberBoxes**2,player.name,players)
             caux.append([way, len(way)])
             self.tableGraph.cleanVisited()
             #programacion dinamica
         shortestWay = min(caux, key=lambda x:x[1])
         return shortestWay[0]
 
-    def turn(self, player):
+    def turn(self, player,players):
         #winPath = findShortPathBFS(self.tableGraph.matchGraph, startnode, player.victory, self.numberBoxes**2, 1)
-        winPath = self.pickUp(player)
-        node = [v for x,v in self.tableGraph.matchGraph.nodes(data=True) if (self.tableGraph.matchGraph.nodes[x]['id'] == winPath[-1])]
-        player.movePlayer(node[0]['indexX'],node[0]['indexY'])
-        if(len(winPath)==1):
-            return [True,player.name]
-        else:
+        winPath = self.pickUp(player,players)
+        if(len(winPath)>1):
+            if self.tableGraph.matchGraph.nodes[winPath[-1]]['occupied']:
+                node = self.tableGraph.matchGraph.nodes[winPath[-2]]
+            else:
+                node = self.tableGraph.matchGraph.nodes[winPath[-1]]
+            print(node)
+            #node = [v for x,v in self.tableGraph.matchGraph.nodes(data=True) if (self.tableGraph.matchGraph.nodes[x]['id'] == winPath[-1])]
+            player.movePlayer(node['indexX'],node['indexY'])
             return [False,player.name]
+        else:
+            node = self.tableGraph.matchGraph.nodes[winPath[-1]]
+            #node = [v for x,v in self.tableGraph.matchGraph.nodes(data=True) if (self.tableGraph.matchGraph.nodes[x]['id'] == winPath[-1])]
+            player.movePlayer(node['indexX'],node['indexY'])
+            return [True,player.name]
 
 ##################### ALGORITHMS TIME #####################
 
@@ -255,7 +264,7 @@ def BFSBase(graph, source, destiny, numberVertex, parents, distances, Nplayer):
                     return True
     return False
 
-def findShortPathBFS(graph, source, destiny, numberVertex, NPlayer):
+def findShortPathBFS(graph, source, destiny, numberVertex, NPlayer,players):
     parents = []
     distances = []
 
@@ -269,6 +278,13 @@ def findShortPathBFS(graph, source, destiny, numberVertex, NPlayer):
         shortPath.append(parents[auxDest])
         auxDest = parents[auxDest]
     shortPath.pop(len(shortPath)-1)
+    for p in players:
+        node = p.stablishNode(graph)
+        listaea = []
+        for nodeg in  graph.neighbors(shortPath[-1]):
+            listaea.append(nodeg)
+        if node in listaea:
+            graph.nodes[node]['occupied'] = True
     return list(shortPath)
 
 ##### Dijkstra ####
