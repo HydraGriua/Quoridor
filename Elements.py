@@ -196,7 +196,7 @@ class Table():
             indexX = 1
             for col in row:
                 box = Box(coordX, coordY, indexX, indexY)
-                box.drawBox(window, self.colors[0], self.lenghtBox)
+                box.drawBox(window, self.colors[7], self.lenghtBox)
                 coordX += self.lenghtBox + self.lenghtSpace
                 indexX += 1
             coordX = self.lenghtSpace
@@ -347,10 +347,8 @@ def findShortPath(graph, source, destiny, numberVertex, NPlayer):
     shortPath.pop(len(shortPath)-1)
     return list(shortPath)
 
-
-
 ##################### INPUT TIME ##########################
-colors = [(255,255,255),(0,0,0),(237,106,90),(53,53,53),(244,241,187),(93,87,107),(28,110,140),(208,204,208),(195,235,120)]#bnr
+colors = [(255,255,255),(237,106,90),(244,241,187),(171,135,255),(43,43,43),(93,87,107),(28,110,140),(208,204,208),(195,235,120)]#bnr
 numberBoxes = int(input('Ingrese el número de casillas de Quoridor: '))
 mtx = [[1] * numberBoxes for i in range(numberBoxes)]
 table = Table(numberBoxes, 625, mtx, colors, 0)
