@@ -278,7 +278,7 @@ def BFSBase(graph, source, destiny, numberVertex, parents, distances, Nplayer):
         queue.popleft()
 
         for ngh in graph.neighbors(current):
-            if(Nplayer not in graph.nodes[ngh]['visited']):
+            if Nplayer not in graph.nodes[ngh]['visited']:
                 graph.nodes[ngh]['visited'].append(Nplayer)
                 distances[ngh] = distances[current] + 1
                 parents[ngh] = current
@@ -288,11 +288,41 @@ def BFSBase(graph, source, destiny, numberVertex, parents, distances, Nplayer):
                     return True
     return False
 
+
+def Dijsktra(graph, source, destiny, numberVertex, parents, distances, Nplayer):
+    for i in range(numberVertex+1):
+        distances.append(numberVertex*2)
+        parents.append(-1) 
+    graph.nodes[source]['visited'].append(Nplayer)
+    distances[source] = 0
+    queue = deque()
+    queue.append(source)
+    while len(queue) != 0:
+        current = queue[0]
+        queue.popleft()
+        for ngh in graph.neighbors(current):
+            if Nplayer not in graph.nodes[ngh]['visited']:
+                graph.nodes[ngh]['visited'].append(Nplayer)
+                distances[ngh] = distances[current] + 1
+                parents[ngh] = current
+                queue.append(ngh)
+                if ngh == destiny:
+                    return True
+
+            elif Nplayer in graph.nodes[ngh]['visited'] and distances[current] + 1 < distances[ngh]:
+                distances[ngh] = distances[current] + 1
+                parents[ngh] = current
+                queue.append(ngh)
+                if ngh == destiny:
+                    return True
+    return False
+
+    
 def findShortPathBFS(graph, source, destiny, numberVertex, NPlayer):
     parents = []
     distances = []
-
-    if (BFSBase(graph, source, destiny, numberVertex, parents, distances, NPlayer) == False):
+        #Dijsktra - BFSBase
+    if (Dijsktra(graph, source, destiny, numberVertex, parents, distances, NPlayer) == False):
         return
     shortPath = []
     auxDest = destiny
