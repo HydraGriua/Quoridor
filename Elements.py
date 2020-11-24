@@ -2,6 +2,7 @@ import pygame as pg
 import networkx as nx
 #9import randon as rd
 from collections import deque
+import heapq as hp
 from tkinter import *
 from tkinter import messagebox
 ##################### CLASSES TIME ########################
@@ -43,8 +44,6 @@ class Player():
         for node,info in g.nodes(data = True):
             if(info['indexX'] == self.indexX and info['indexY'] == self.indexY):
                 return node
-
-
 class Wall():
     def __init__(self, AindexX, AindexY, BindexX, BindexY):
         cn = [0,0] 
@@ -66,7 +65,6 @@ class Wall():
             pg.draw.rect(window,color,[cx + lenghtBox + (minor/2),cy,minor,major])
         else:
             pg.draw.rect(window,color,[cx,cy + lenghtBox + (minor/2),major,minor])
-
 class Box():
     def __init__(self, coordX, coordY, indexX, indexY):
         self.coordX = coordX
@@ -75,7 +73,6 @@ class Box():
         self.indexY = indexY
     def drawBox(self, window, color, lenghtBox):
         pg.draw.rect(window, color, [self.coordX, self.coordY, lenghtBox, lenghtBox])
-
 class TableGraph():
     def __init__(self, numberBoxes):
         self.matchGraph = nx.Graph()
@@ -103,7 +100,6 @@ class TableGraph():
                 nodeDown = self.matchGraph.nodes[numNode + self.numberBoxes]
                 if(actualNode['indexX']==nodeDown['indexX']):
                     self.matchGraph.add_edge(numNode, numNode + self.numberBoxes, nodes=[[actualNode['indexX'],actualNode['indexY']],[nodeDown['indexX'],nodeDown['indexY']]])
-    
     def cleanVisited(self):
         for node,prop in self.matchGraph.nodes(data= True):
             self.matchGraph.nodes[node]['visited'] = []
@@ -119,7 +115,6 @@ class TableGraph():
             if(info['indexX'] == node2[0] and info['indexY'] == node2[1]):
                 n2 = node
         self.matchGraph.remove_edge(n1,n2)
-
 class Table():
     def __init__(self, numberBoxes, lenghtTable, matrix, colors, numberWalls):
         self.lenghtTable = lenghtTable
@@ -147,7 +142,6 @@ class Table():
                 p.drawPlayer(window)
             for wall in walls:
                wall.drawWall(window, self.colors[8], self.lenghtBox)
-
             pressed = pg.key.get_pressed()
             won = [False,0]
             pg.display.set_caption("Tablero de Quoridor v3 || Turno de Jugador: " + str(self.numberTurn))
@@ -184,9 +178,7 @@ class Table():
                 if self.numberTurn <4:
                     self.numberTurn += 1
                 else:
-                    self.numberTurn =1
-
-            
+                    self.numberTurn =1 
             pg.time.delay(100)
             pg.display.update()
             if won[0] == True:
@@ -220,7 +212,7 @@ class Table():
         pts = player.victory
         allNodes = [node for node,val in self.tableGraph.matchGraph.nodes(data = True) if ((pts[0] == 0 and val['indexX'] == pts[1]) or (pts[0] == 1 and val['indexY'] == pts[1]))]
         for node in allNodes:
-            way = findShortPathBFS(self.tableGraph.matchGraph, startnode, node, self.numberBoxes**2,player.name)
+            way = findShortPath(self.tableGraph.matchGraph, startnode, node, self.numberBoxes**2,player.name)
             #########################
             self.tableGraph.cleanVisited()
             for p in players:
@@ -264,35 +256,24 @@ class Table():
 ####### DFS #######
 ####### BFS ####### Modified
 def BFSBase(graph, source, destiny, numberVertex, parents, distances, Nplayer):
-    queue = deque()
-    for i in range(numberVertex+1):
-        distances.append(numberVertex*2)
-        parents.append(-1)
     s = source
     d = destiny
+    queue = deque()
     graph.nodes[s]['visited'].append(Nplayer)
-    distances[s] = 0
     queue.append(s)
     while len(queue) != 0:
         current = queue[0]
         queue.popleft()
-
         for ngh in graph.neighbors(current):
             if Nplayer not in graph.nodes[ngh]['visited']:
                 graph.nodes[ngh]['visited'].append(Nplayer)
-                distances[ngh] = distances[current] + 1
                 parents[ngh] = current
                 queue.append(ngh)
-                
                 if(ngh == d):
                     return True
     return False
 
-
-def Dijsktra(graph, source, destiny, numberVertex, parents, distances, Nplayer):
-    for i in range(numberVertex+1):
-        distances.append(numberVertex*2)
-        parents.append(-1) 
+def Dijsktra(graph, source, destiny, numberVertex, parents, distances, Nplayer): 
     graph.nodes[source]['visited'].append(Nplayer)
     distances[source] = 0
     queue = deque()
@@ -308,7 +289,6 @@ def Dijsktra(graph, source, destiny, numberVertex, parents, distances, Nplayer):
                 queue.append(ngh)
                 if ngh == destiny:
                     return True
-
             elif Nplayer in graph.nodes[ngh]['visited'] and distances[current] + 1 < distances[ngh]:
                 distances[ngh] = distances[current] + 1
                 parents[ngh] = current
@@ -317,12 +297,45 @@ def Dijsktra(graph, source, destiny, numberVertex, parents, distances, Nplayer):
                     return True
     return False
 
+def AStar(graph, source, destiny, numberVertex, parents, distances, Nplayer):
+    s = source
+    d = destiny
+    def h(n):
+        c1 = abs(graph.nodes[n]['indexX'] - graph.nodes[d]['indexX'])
+        c2 = abs(graph.nodes[n]['indexY'] - graph.nodes[d]['indexY'])
+        return c1+c2
+    gScore = []
+    fScore = []
+    for i in range(numberVertex+1):
+        fScore.append([999,i]) 
+        gScore.append(999)
+    gScore[s] = 0
+    fScore[s][0] = h(s)
+    q = [fScore[s]]
+    while len(q) != 0:
+        _,current = hp.heappop(q)
+        if current == d:
+            return True
+        for ngh in graph.neighbors(current):
+            tentative = gScore[current] + 1
+            if tentative < gScore[ngh]:
+                parents[ngh] = current
+                gScore[ngh] = tentative
+                fScore[ngh][0] = gScore[ngh] + h(ngh)
+                if ngh not in q:
+                    hp.heappush(q, [fScore[ngh][0], ngh])
+    return False
+
     
-def findShortPathBFS(graph, source, destiny, numberVertex, NPlayer):
+def findShortPath(graph, source, destiny, numberVertex, NPlayer):
     parents = []
     distances = []
-        #Dijsktra - BFSBase
-    if (Dijsktra(graph, source, destiny, numberVertex, parents, distances, NPlayer) == False):
+    for i in range(numberVertex+1):
+        distances.append(numberVertex*2)
+        parents.append(-1) 
+
+        #elegir entre-> Dijsktra - BFSBase - AStar
+    if (AStar(graph, source, destiny, numberVertex, parents, distances, NPlayer) == False):
         return
     shortPath = []
     auxDest = destiny
