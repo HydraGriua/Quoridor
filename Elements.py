@@ -5,6 +5,7 @@ from collections import deque
 import heapq as hp
 from tkinter import *
 from tkinter import messagebox
+import time
 ##################### CLASSES TIME ########################
 class Player():
     def __init__(self, indexX, indexY, lenghtStep, name, color, numBoxes):
@@ -182,8 +183,14 @@ class Table():
             pg.time.delay(100)
             pg.display.update()
             if won[0] == True:
+                window.fill(colors[6])
+                self.generateTable(window)
                 for p in players:
                     p.drawPlayer(window)
+                for wall in walls:
+                    wall.drawWall(window, self.colors[8], self.lenghtBox)
+                pg.display.update()
+                pg.time.delay(500)
                 Tk().wm_withdraw()
                 messagebox.showinfo('Ganó el jugador ' + str(won[1]),'Salir')
                 run = False
@@ -206,31 +213,42 @@ class Table():
        p = Player(idx,idy,self.lenghtBox, numberPlayer,self.colors[numberPlayer], numBoxes)
        return p
     def pickUp(self,player,players):
-        startnode = player.stablishNode(self.tableGraph.matchGraph)
+        gx = self.tableGraph.matchGraph
+        startnode = player.stablishNode(gx)
         caux = []
         allNodes = []
         pts = player.victory
-        allNodes = [node for node,val in self.tableGraph.matchGraph.nodes(data = True) if ((pts[0] == 0 and val['indexX'] == pts[1]) or (pts[0] == 1 and val['indexY'] == pts[1]))]
+        allNodes = [node for node,val in gx.nodes(data = True) if ((pts[0] == 0 and val['indexX'] == pts[1]) or (pts[0] == 1 and val['indexY'] == pts[1]))]
         for node in allNodes:
-            way = findShortPath(self.tableGraph.matchGraph, startnode, node, self.numberBoxes**2,player.name)
+            way = findShortPath(gx, startnode, node, self.numberBoxes**2,player.name)
             #########################
             self.tableGraph.cleanVisited()
-            for p in players:
-                node = p.stablishNode(self.tableGraph.matchGraph)
-                lp2 = players.copy()
-                if node == way[-1]:
-                    self.tableGraph.matchGraph.nodes[node]['occupied'] = True
-                    lp2.remove(p)
-                    for pera in lp2:
-                        if way[-2] == pera.stablishNode(self.tableGraph.matchGraph):
-                            self.tableGraph.matchGraph.nodes[way[-2]]['ocuppied'] = True
-                            li = []
-                            for i in self.tableGraph.matchGraph.neighbors(way[-1]):
+            nodx = 0
+            if len(way) > 1:
+                for p in players:
+                    nodeg = p.stablishNode(gx)
+                    gx.nodes[nodeg]['occupied'] = True
+                    if nodeg == way[-1]:
+                        nodx = nodeg    
+                   
+                aea = False
+                if nodx == way[-1]:
+                    for p in players:
+                        gg = p.stablishNode(gx)
+                        if way[-2] == gg:
+                            aea = True
+                            break  
+                    if aea:
+                        li = []
+                        for i in gx.neighbors(way[-1]):
+                            if (gx.nodes[i]['occupied'] == False) and (i != player.stablishNode(gx)):
                                 li.append(i)
-                            for i in li:
-                                if (i == way[-2] or self.tableGraph.matchGraph.nodes[i]['occupied'] == True or i == player.stablishNode(self.tableGraph.matchGraph)):
-                                    li.remove(i)
-                            way[-1] = li[0]
+                        way[-1] = li[0]
+                    else:
+                        way[-1] = way[-2]
+
+
+                    
                     
             ############################
             caux.append([way, len(way)])
@@ -239,11 +257,12 @@ class Table():
 
     def turn(self, player,players):
         winPath = self.pickUp(player,players)
+        print('move')
         if(len(winPath)>1):
-            if self.tableGraph.matchGraph.nodes[winPath[-1]]['occupied']:
-                node = self.tableGraph.matchGraph.nodes[winPath[-2]]
-            else:
-                node = self.tableGraph.matchGraph.nodes[winPath[-1]]
+            #if self.tableGraph.matchGraph.nodes[winPath[-1]]['occupied']:
+            #    node = self.tableGraph.matchGraph.nodes[winPath[-2]]
+            #else:
+            node = self.tableGraph.matchGraph.nodes[winPath[-1]]
             player.movePlayer(node['indexX'],node['indexY'])
             return [False,player.name]
         else:
@@ -334,8 +353,12 @@ def findShortPath(graph, source, destiny, numberVertex, NPlayer):
         distances.append(numberVertex*2)
         parents.append(-1) 
 
-        #elegir entre-> Dijsktra - BFSBase - AStar
-    if (AStar(graph, source, destiny, numberVertex, parents, distances, NPlayer) == False):
+    start = time.time()
+    #elegir entre-> AStar - Dijsktra - BFSBase
+    exist = AStar(graph, source, destiny, numberVertex, parents, distances, NPlayer) 
+    end = time.time()
+    print (end-start) 
+    if (exist == False):
         return
     shortPath = []
     auxDest = destiny
