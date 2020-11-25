@@ -20,8 +20,7 @@ class Player():
         self.coordX = ((self.indexX * self.lenghtSpace) + (self.lenghtStep * (self.indexX - 0.5)))
         self.coordY = ((self.indexY * self.lenghtSpace) + (self.lenghtStep * (self.indexY - 0.5)))
         self.colorPlayer = color
-        #self.victory = v
-        #
+        #Condiciones de victoria según las posiciones iniciales de los jugadores
         cvic = 0
         difX, difY = self.firstX - 1, self.firstY - 1  
         if(self.firstX == (numBoxes//2)+1 and difY == 0):
@@ -32,8 +31,7 @@ class Player():
             cvic = [0,numBoxes] # [x, numBoxes]
         elif(self.firstY == (numBoxes//2)+1 and difX > 0):
             cvic = [0,1] # [x, 1]
-        self.victory = cvic
-
+        self.victory = cvic #Una lista cuyos elementos indican el eje e índice de las posiciones de victoria
     def drawPlayer(self, window):
         pg.draw.circle(window, self.colorPlayer, (int(self.coordX), int(self.coordY)), int(self.lenghtStep / 4))
     def movePlayer(self, indexX, indexY):
@@ -45,8 +43,10 @@ class Player():
         for node,info in g.nodes(data = True):
             if(info['indexX'] == self.indexX and info['indexY'] == self.indexY):
                 return node
+
 class Wall():
     def __init__(self, AindexX, AindexY, BindexX, BindexY):
+        #Con las operaciones a continuación definimos si un muro es horizontal o vertical
         cn = [0,0] 
         difX = AindexX - BindexX
         difY = AindexY - BindexY
@@ -66,6 +66,7 @@ class Wall():
             pg.draw.rect(window,color,[cx + lenghtBox + (minor/2),cy,minor,major])
         else:
             pg.draw.rect(window,color,[cx,cy + lenghtBox + (minor/2),major,minor])
+
 class Box():
     def __init__(self, coordX, coordY, indexX, indexY):
         self.coordX = coordX
@@ -74,12 +75,13 @@ class Box():
         self.indexY = indexY
     def drawBox(self, window, color, lenghtBox):
         pg.draw.rect(window, color, [self.coordX, self.coordY, lenghtBox, lenghtBox])
+
 class TableGraph():
     def __init__(self, numberBoxes):
         self.matchGraph = nx.Graph()
         self.numberBoxes = numberBoxes
         self.generateGraph()
-    def generateGraph(self): #generar el grafo correspondiente al tablero
+    def generateGraph(self):
         for i in range(self.numberBoxes**2):
             numberNode = i + 1
             idx, idy = 0,0
@@ -89,24 +91,22 @@ class TableGraph():
             else:
                 idx = int(numberNode - ((numberNode//self.numberBoxes)*self.numberBoxes))
                 idy = int((numberNode//self.numberBoxes)+1)
-            self.matchGraph.add_node(numberNode, indexX = idx, indexY = idy, visited=[], id= numberNode, occupied = False)
-        
+            self.matchGraph.add_node(numberNode, indexX = idx, indexY = idy, visited=[], id= numberNode, occupied = False)        
         for numNode in range(1,(self.numberBoxes**2)+1):
             actualNode = self.matchGraph.nodes[numNode]
             if (numNode+1<((self.numberBoxes**2)+1)):
                 nodeNext = self.matchGraph.nodes[numNode+1]
                 if(actualNode['indexY']==nodeNext['indexY']):
-                    self.matchGraph.add_edge(numNode, numNode + 1, nodes=[[actualNode['indexX'],actualNode['indexY']],[nodeNext['indexX'],nodeNext['indexY']]])
+                    self.matchGraph.add_edge(numNode, numNode + 1)
             if (numNode + self.numberBoxes<((self.numberBoxes**2)+1)):
                 nodeDown = self.matchGraph.nodes[numNode + self.numberBoxes]
                 if(actualNode['indexX']==nodeDown['indexX']):
-                    self.matchGraph.add_edge(numNode, numNode + self.numberBoxes, nodes=[[actualNode['indexX'],actualNode['indexY']],[nodeDown['indexX'],nodeDown['indexY']]])
-    def cleanVisited(self):
+                    self.matchGraph.add_edge(numNode, numNode + self.numberBoxes)
+    def cleanVisited(self): #Funcuón que limpia información del grafo después de cada turno
         for node,prop in self.matchGraph.nodes(data= True):
             self.matchGraph.nodes[node]['visited'] = []
             self.matchGraph.nodes[node]['occupied'] = False
-
-    def insertedWall(self, objWall): #funcion que se llama cada vez que se inserta un muro
+    def insertedWall(self, objWall): #Funcion que se llama cada vez que se inserta un muro, para hacer remove_edge
         node1 = objWall.nodesBlocked[0]
         node2 = objWall.nodesBlocked[1]
         n1,n2 = 0,0
@@ -116,6 +116,7 @@ class TableGraph():
             if(info['indexX'] == node2[0] and info['indexY'] == node2[1]):
                 n2 = node
         self.matchGraph.remove_edge(n1,n2)
+
 class Table():
     def __init__(self, numberBoxes, lenghtTable, matrix, colors, numberWalls):
         self.lenghtTable = lenghtTable
@@ -127,7 +128,7 @@ class Table():
         self.numberWalls = numberWalls
         self.tableGraph = TableGraph(self.numberBoxes)
         self.numberTurn = 1
-    def generateWindow(self, players): #general la ventana de pygame
+    def generateWindow(self, players): #Genera y controla el juego
         pg.init()
         window = pg.display.set_mode((self.lenghtTable, self.lenghtTable))
         pg.display.set_caption("Tablero de Quoridor v3")
@@ -146,7 +147,7 @@ class Table():
             pressed = pg.key.get_pressed()
             won = [False,0]
             pg.display.set_caption("Tablero de Quoridor v3 || Turno de Jugador: " + str(self.numberTurn))
-            if pressed[pg.K_w]:
+            if pressed[pg.K_w]: #Presionar 'w' para hacer un movimiento y gastar tu turno
                 if self.numberTurn == 1:
                     won = self.turn(players[0],[players[1],players[2],players[3]])
                     self.numberTurn += 1
@@ -160,7 +161,7 @@ class Table():
                     won = self.turn(players[3],[players[0],players[1],players[2]])
                     self.numberTurn = 1
                 self.tableGraph.cleanVisited()
-            if pressed[pg.K_s]:
+            if pressed[pg.K_s]: #Presionar 's' para hacer un input con el fin de colocar un muro y usar el turno
                 ax, ay, dx, dy, direc = map(int, input().split())
                 bx,by,cx,cy = dx,ay,ax,dy
                 walla = 0
@@ -175,14 +176,13 @@ class Table():
                 self.tableGraph.insertedWall(wallb)
                 walls.append(walla)
                 walls.append(wallb)
-
                 if self.numberTurn <4:
                     self.numberTurn += 1
                 else:
                     self.numberTurn =1 
             pg.time.delay(100)
             pg.display.update()
-            if won[0] == True:
+            if won[0] == True: #Sucede cuando gana un jugador
                 window.fill(colors[6])
                 self.generateTable(window)
                 for p in players:
@@ -196,7 +196,7 @@ class Table():
                 run = False
                 pg.display.quit()
                 pg.quit()
-    def generateTable(self, window): #generar la tabla y dibujar
+    def generateTable(self, window): #Generar la tabla y dibujar
         coordX, coordY = self.lenghtSpace, self.lenghtSpace
         indexX, indexY = 1, 1
         for row in self.matrix:
@@ -212,16 +212,17 @@ class Table():
     def generatePlayer(self, idx, idy, numberPlayer, numBoxes):
        p = Player(idx,idy,self.lenghtBox, numberPlayer,self.colors[numberPlayer], numBoxes)
        return p
-    def pickUp(self,player,players):
+    def pickUp(self,player,players): #Funcion llamada por 'turn' para obtener el menor de los caminos 
         gx = self.tableGraph.matchGraph
         startnode = player.stablishNode(gx)
         caux = []
         allNodes = []
         pts = player.victory
+        #La siguiente línea es la que obtiene las posiciones de victoria
         allNodes = [node for node,val in gx.nodes(data = True) if ((pts[0] == 0 and val['indexX'] == pts[1]) or (pts[0] == 1 and val['indexY'] == pts[1]))]
         for node in allNodes:
             way = findShortPath(gx, startnode, node, self.numberBoxes**2,player.name)
-            #########################
+            #Se evalua si en el camino hay jugadores
             self.tableGraph.cleanVisited()
             nodx = 0
             if len(way) > 1:
@@ -230,32 +231,27 @@ class Table():
                     gx.nodes[nodeg]['occupied'] = True
                     if nodeg == way[-1]:
                         nodx = nodeg    
-                   
-                aea = False
+                scnd = False
                 if nodx == way[-1]:
                     for p in players:
                         gg = p.stablishNode(gx)
                         if way[-2] == gg:
-                            aea = True
-                            break  
-                    if aea:
-                        li = []
+                            scnd = True
+                            break
+                    #Si por alguna razón no podemos saltar o ir en diagonal  
+                    if scnd:
+                        ln = []
                         for i in gx.neighbors(way[-1]):
                             if (gx.nodes[i]['occupied'] == False) and (i != player.stablishNode(gx)):
-                                li.append(i)
-                        way[-1] = li[0]
+                                ln.append(i)
+                        way[-1] = ln[0]
                     else:
                         way[-1] = way[-2]
-
-
-                    
-                    
-            ############################
             caux.append([way, len(way)])
+        #Vemos cual de los caminos hacia los nodos de victoria es el mas corto
         shortestWay = min(caux, key=lambda x:x[1])
         return shortestWay[0]
-
-    def turn(self, player,players):
+    def turn(self, player,players): #Funcion que se ejecuta cada turno
         winPath = self.pickUp(player,players)
         print('move')
         if(len(winPath)>1):
@@ -272,8 +268,6 @@ class Table():
 
 ##################### ALGORITHMS TIME #####################
 
-####### DFS #######
-####### BFS ####### Modified
 def BFSBase(graph, source, destiny, numberVertex, parents, distances, Nplayer):
     s = source
     d = destiny
@@ -345,8 +339,7 @@ def AStar(graph, source, destiny, numberVertex, parents, distances, Nplayer):
                     hp.heappush(q, [fScore[ngh][0], ngh])
     return False
 
-    
-def findShortPath(graph, source, destiny, numberVertex, NPlayer):
+def findShortPath(graph, source, destiny, numberVertex, NPlayer): #Funcion llamada para evaluar el grafo y buscar caminos
     parents = []
     distances = []
     for i in range(numberVertex+1):
@@ -354,16 +347,15 @@ def findShortPath(graph, source, destiny, numberVertex, NPlayer):
         parents.append(-1) 
 
     start = time.time()
-    #elegir entre-> AStar - Dijsktra - BFSBase
+    #Puede elegir entre AStar - Dijsktra - BFSBase, solo tiene que cambiar el nombre de la función llamada
     exist = AStar(graph, source, destiny, numberVertex, parents, distances, NPlayer) 
     end = time.time()
-    print (end-start) 
+    print (end-start) #Sirve para ver cuanto tiempo demora el algoritmo 
     if (exist == False):
         return
     shortPath = []
     auxDest = destiny
     shortPath.append(auxDest)
-
     while parents[auxDest] != -1:
         shortPath.append(parents[auxDest])
         auxDest = parents[auxDest]
@@ -375,6 +367,7 @@ colors = [(255,255,255),(237,106,90),(244,241,187),(171,135,255),(43,43,43),(93,
 numberBoxes = int(input('Ingrese el número de casillas de Quoridor: '))
 mtx = [[1] * numberBoxes for i in range(numberBoxes)]
 table = Table(numberBoxes, 625, mtx, colors, 0)
+#Por defecto, las posiciones de los jugadores estarán a un extremo y al medio
 p1 = table.generatePlayer(numberBoxes//2+1,1,1,numberBoxes)
 p2 = table.generatePlayer(1,numberBoxes//2+1,2,numberBoxes)
 p3 = table.generatePlayer(numberBoxes,numberBoxes//2+1,3,numberBoxes)
