@@ -266,49 +266,7 @@ class Table():
             player.movePlayer(node['indexX'],node['indexY'])
             return [True,player.name]
 
-##################### ALGORITHMS TIME #####################
-
-def BFSBase(graph, source, destiny, numberVertex, parents, distances, Nplayer):
-    s = source
-    d = destiny
-    queue = deque()
-    graph.nodes[s]['visited'].append(Nplayer)
-    queue.append(s)
-    while len(queue) != 0:
-        current = queue[0]
-        queue.popleft()
-        for ngh in graph.neighbors(current):
-            if Nplayer not in graph.nodes[ngh]['visited']:
-                graph.nodes[ngh]['visited'].append(Nplayer)
-                parents[ngh] = current
-                queue.append(ngh)
-                if(ngh == d):
-                    return True
-    return False
-
-def Dijsktra(graph, source, destiny, numberVertex, parents, distances, Nplayer): 
-    graph.nodes[source]['visited'].append(Nplayer)
-    distances[source] = 0
-    queue = deque()
-    queue.append(source)
-    while len(queue) != 0:
-        current = queue[0]
-        queue.popleft()
-        for ngh in graph.neighbors(current):
-            if Nplayer not in graph.nodes[ngh]['visited']:
-                graph.nodes[ngh]['visited'].append(Nplayer)
-                distances[ngh] = distances[current] + 1
-                parents[ngh] = current
-                queue.append(ngh)
-                if ngh == destiny:
-                    return True
-            elif Nplayer in graph.nodes[ngh]['visited'] and distances[current] + 1 < distances[ngh]:
-                distances[ngh] = distances[current] + 1
-                parents[ngh] = current
-                queue.append(ngh)
-                if ngh == destiny:
-                    return True
-    return False
+##################### ALGORITHM TIME #####################
 
 def AStar(graph, source, destiny, numberVertex, parents, distances, Nplayer):
     s = source
@@ -347,10 +305,8 @@ def findShortPath(graph, source, destiny, numberVertex, NPlayer): #Funcion llama
         parents.append(-1) 
 
     start = time.time()
-    #Puede elegir entre AStar - Dijsktra - BFSBase, solo tiene que cambiar el nombre de la función llamada
     exist = AStar(graph, source, destiny, numberVertex, parents, distances, NPlayer) 
     end = time.time()
-    print (end-start) #Sirve para ver cuanto tiempo demora el algoritmo 
     if (exist == False):
         return
     shortPath = []
