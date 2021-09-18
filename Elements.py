@@ -143,7 +143,7 @@ class Table():
             for p in players:
                 p.drawPlayer(window)
             for wall in walls:
-               wall.drawWall(window, self.colors[8], self.lenghtBox)
+                wall.drawWall(window, self.colors[8], self.lenghtBox)
             pressed = pg.key.get_pressed()
             won = [False,0]
             pg.display.set_caption("Tablero de Quoridor v3 || Turno de Jugador: " + str(self.numberTurn))
@@ -160,8 +160,10 @@ class Table():
                 elif self.numberTurn == 4:
                     won = self.turn(players[3],[players[0],players[1],players[2]])
                     self.numberTurn = 1
+                print("El jugador: " + str(self.numberTurn) + "realizó un movimiento.")
                 self.tableGraph.cleanVisited()
             if pressed[pg.K_s]: #Presionar 's' para hacer un input con el fin de colocar un muro y usar el turno
+                print("El jugador: " + str(self.numberTurn) + " ha decidido insertar un muro en su turno. Ingrese los valores para x1, y1, x2, y2, disposicion del muro (1: Horizontal, 2: Vertical)")
                 ax, ay, dx, dy, direc = map(int, input().split())
                 bx,by,cx,cy = dx,ay,ax,dy
                 walla = 0
@@ -210,8 +212,8 @@ class Table():
             coordY += self.lenghtBox + self.lenghtSpace
             indexY += 1
     def generatePlayer(self, idx, idy, numberPlayer, numBoxes):
-       p = Player(idx,idy,self.lenghtBox, numberPlayer,self.colors[numberPlayer], numBoxes)
-       return p
+        p = Player(idx,idy,self.lenghtBox, numberPlayer,self.colors[numberPlayer], numBoxes)
+        return p
     def pickUp(self,player,players): #Funcion llamada por 'turn' para obtener el menor de los caminos 
         gx = self.tableGraph.matchGraph
         startnode = player.stablishNode(gx)
@@ -253,7 +255,6 @@ class Table():
         return shortestWay[0]
     def turn(self, player,players): #Funcion que se ejecuta cada turno
         winPath = self.pickUp(player,players)
-        print('move')
         if(len(winPath)>1):
             #if self.tableGraph.matchGraph.nodes[winPath[-1]]['occupied']:
             #    node = self.tableGraph.matchGraph.nodes[winPath[-2]]
