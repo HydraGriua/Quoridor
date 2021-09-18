@@ -268,14 +268,17 @@ class Table():
             return [True,player.name]
 
 ##################### ALGORITHM TIME #####################
-
+# Aquí se explicará a detalle el uso del algoritmo A* respecto a Quoridor
 def AStar(graph, source, destiny, numberVertex, parents, distances, Nplayer):
+    # Indicamos nodo de fuente y destino
     s = source
     d = destiny
+    # Esta heurística es para calcular distancias, usada mas adelante
     def h(n):
         c1 = abs(graph.nodes[n]['indexX'] - graph.nodes[d]['indexX'])
         c2 = abs(graph.nodes[n]['indexY'] - graph.nodes[d]['indexY'])
         return c1+c2
+    # Usamos la heurísitca para calcular distancias tentativas cada vez que se ejecuta la funcion
     gScore = []
     fScore = []
     for i in range(numberVertex+1):
@@ -286,10 +289,13 @@ def AStar(graph, source, destiny, numberVertex, parents, distances, Nplayer):
     q = [fScore[s]]
     while len(q) != 0:
         _,current = hp.heappop(q)
-        if current == d:
+        # Si el nodo actual es igual al destino, llegamos a la meta. Finaliza la funcion
+        if current == d: 
             return True
+        # Si no, evaluamos a los vecinos usando la heurística presentada antes
         for ngh in graph.neighbors(current):
             tentative = gScore[current] + 1
+            # Mediante distancias tentativas (que parecen ser las más cortas) comparamos
             if tentative < gScore[ngh]:
                 parents[ngh] = current
                 gScore[ngh] = tentative
